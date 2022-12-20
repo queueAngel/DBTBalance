@@ -19,17 +19,28 @@ namespace DBTBalance.Buffs
     {
         public override void SetStaticDefaults()
         {
-            base.DisplayName.SetDefault("Legendary Super Saiyan 4");
-            Main.buffNoTimeDisplay[Type] = true; 
-            Main.buffNoSave[Type] = true;
-            Main.debuff[Type] = false;
+            DisplayName.SetDefault("Legendary Super Saiyan 4");
+            if (BalanceConfigServer.Instance.SSJTweaks)
+            {
+                damageMulti = 1f;
+                speedMulti = 1.5f;
+                kiDrainRate = 4.5f;
+                kiDrainRateWithMastery = 2.5f;
+                attackDrainMulti = 1.70f;
+                baseDefenceBonus = 22;
+            }
+            else
+            {
+                damageMulti = 3.8f;
+                speedMulti = 3.50f;
+                kiDrainRate = 4.5f;
+                kiDrainRateWithMastery = 2.5f;
+                attackDrainMulti = 1.70f;
+                baseDefenceBonus = 41;
+            }
+            
 
-            damageMulti = 1f;
-            speedMulti = 1.5f;
-            kiDrainRate = 4.2f;
-            kiDrainRateWithMastery = kiDrainRate / 2;
-            attackDrainMulti = 4f;
-            baseDefenceBonus = 22;
+            base.SetStaticDefaults();
         }
 
         public static TransformationInfo LSSJ4Info => 
@@ -38,7 +49,6 @@ namespace DBTBalance.Buffs
                 Color.HotPink, CanTransform , OnTransform, PostTransform, 
                 new AnimationData(new AuraData("DBTBalance/Assets/LSSJ4Aura", 4, 3, BlendState.AlphaBlend,new Color(250, 74, 67), "DBTBalance/Assets/LSSJ4Hair"), true, 
                     new SoundData("DBZMODPORT/Sounds/SSJAscension", "DBZMODPORT/Sounds/SSJ3", 260)));
-
         
         public static bool CanTransform(Player player)
         {

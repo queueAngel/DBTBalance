@@ -2,54 +2,10 @@ This mod aims to rebalance the Super Saiyan forms from the Dragon Ball Terraria 
 by greatly toning down the damage, speed and defense bonuses granted by these forms. Ensuring that usage of these forms 
 does not invalidate the challenges of the game. 
 
-
 Although this mod supports Dragon Ball Calamity Add-on, it is not required to use this mod. Only Dragon Ball Terraria is required.
 
-Changes:
-
-Super Saiyan 1:
-x1.2 damage | x1.2 Speed | 4 Defense
-
-Ascended Super Saiyan: 
-x1.26 damage | x1.2 Speed | 5 Defense
-
-Ultra Super Sayain: 
-x1.28 damage | x0.9 Speed | 7 Defense
-
-Super Sayain 2: 
-x1.3 damage | x1.24 Speed | 8 Defense
-
-Legendary Super Sayain: 
-x1.35 Damage | x1.3 Speed | 6 Defense
-
-Super Sayain 3: 
-x1.4 Damage | x1.3 Speed | 12 Defense
-
-Legendary Super Sayain 2: 
-x1.5 Damage | x1.35 Speed | 14 Defense
-
-Super Saiyan God: 
-x1.6 Damage | x1.5 Speed | 16 Defense
-
-Legendary Super Saiyan 3: 
-x1.65 Damage | x1.4 Speed | 20 Defense
-
-Super Saiyan Blue: 
-x1.75 Damage | x1.4 Speed | 20 Defense
-
-Super Saiyan Rose: 
-x1.85 Damage | x1.4 Speed | 17 Defense
-
-Legendary Super Saiyan 4:
-x1.80 Damage | x1.4 Speed | 25 Defense
-
-Ultra Instinct:
-x1.9 Damage | x1.3 Speed | 20 Defense | 20% Dodge Chance
-
-Mastered Ultra Instinct
-x2 Damage | x1.5 Speed | 22 Defense | 35% Dodge Chance
-
-Ultra Ego 
-x2.2 to x2.5 Damage | x1.3 Speed | 18 Defense
-
 Sprites Edited/Based on Dragon Ball Terraria's Sprites. Credit to the original team.
+
+Huge thanks to @Kosmic#4494 for his coding expertise, this mod would not be possible without him.
+
+Also shoutouts to @moofiche#9598 for gathering data to help balance all aspects of this mod.

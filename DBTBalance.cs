@@ -27,12 +27,14 @@ namespace DBTBalance
         | BindingFlags.SetField | BindingFlags.GetProperty | BindingFlags.SetProperty;
 
         internal List<Detour> Detours = new List<Detour>();
+        internal List<Hook> Hooks = new List<Hook>();
 
         public override void Load()
         {
             Instance = this;
+            MonoModHooks.RequestNativeAccess();
 
-            if(ModLoader.TryGetMod("DBZGoatLib", out Mod goat))
+            if (ModLoader.TryGetMod("DBZGoatLib", out Mod goat))
             {
                 GOATLIB = goat;
                 DBZGoatLib.Handlers.TransformationHandler.RegisterTransformation(LSSJ4Buff.LSSJ4Info);
@@ -40,21 +42,66 @@ namespace DBTBalance
             if (ModLoader.TryGetMod("DBZMODPORT", out Mod dbz))
             {
                 DBZMOD = dbz;
+
+                var BaseProj = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("BaseBeam"));
+                var myPlayer = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
+                var baseBeamCharge = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("BaseBeamCharge"));
+                var AbstractChargeBall = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("AbstractChargeBall"));
+
+                AddHook(BaseProj.AsType(), "ModifyHitNPC", typeof(Hooks), "BaseBeam_ModifyHitNPC_Hook");
+
+                AddHook(myPlayer.AsType(), "ResetEffects", typeof(Hooks), "MyPlayer_ResetEffects_Hook");
+                AddHook(myPlayer.AsType(), "HandleTransformations", typeof(Hooks), "MyPlayer_HandleTransformations_Hook");
+
+                AddHook(baseBeamCharge.AsType(), "GetBeamPowerMultiplier", typeof(Hooks), "BaseBeamCharge_GetBeamPowerMultiplier_Hook");
+                AddHook(baseBeamCharge.AsType(), "GetBeamDamage", typeof(Hooks), "BaseBeamCharge_GetBeamDamage_Hook");
+
+                AddHook(AbstractChargeBall.AsType(), "HandleChargingKi", typeof(Hooks), "AbstractChargeBall_HandleChargingKi_Hook");
+
+                foreach (var acc in AccessoryHooks.upgradePaths)
+                {
+                    var type = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals(acc.Key));
+
+                    AddHook(type.AsType(), "UpdateAccessory", typeof(AccessoryHooks), "Update_hook");
+                }
+                foreach (var acc in AccessoryHooks.ChagnedTooltips)
+                {
+                    var type = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals(acc.Key));
+
+                    AddHook(type.AsType(), "SetStaticDefaults", typeof(AccessoryHooks), "SetStaticDefaults_Hook");
+                }
+                foreach (var adj in BuffHooks.DBT_Adjustments)
+                {
+                    var type = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals(adj.Key));
+
+                    AddHook(type.AsType(), "SetStaticDefaults", typeof(BuffHooks), "SetStaticDefaults_Hook");
+                    AddHook(type.AsType(), "Update", new Type[] { typeof(Player), typeof(int).MakeByRefType() }, typeof(BuffHooks), "Update_Hook");
+                }
             }
             
             if(ModLoader.TryGetMod("dbzcalamity",out Mod dbca))
             {
                 DBCA = dbca;
 
-                MonoModHooks.RequestNativeAccess();
+                foreach (var acc in AccessoryHooks.dbcaUpgradePaths)
+                {
+                    var type = dbca.Code.DefinedTypes.First(x => x.Name.Equals(acc.Key));
 
-                var MUI = DBCA.Code.DefinedTypes.First(x => x.Name.Equals("UIBuff"));
-                var UI = DBCA.Code.DefinedTypes.First(x => x.Name.Equals("UISignBuff"));
-                var UE = DBCA.Code.DefinedTypes.First(x => x.Name.Equals("UEBuff"));
+                    AddHook(type.AsType(), "UpdateAccessory", typeof(AccessoryHooks), "Update_hook");
+                }
+                foreach (var acc in AccessoryHooks.DBCAChagnedToolttips)
+                {
+                    var type = dbca.Code.DefinedTypes.First(x => x.Name.Equals(acc.Key));
 
-                AddDetour(MUI.AsType(), "Update", new Type[] { typeof(Player), typeof(int).MakeByRefType() }, typeof(Detours), "UI_Update_Detour");
-                AddDetour(UI.AsType(), "Update", new Type[] { typeof(Player), typeof(int).MakeByRefType() }, typeof(Detours), "UI_Update_Detour");
-                AddDetour(UE.AsType(), "Update", new Type[] { typeof(Player), typeof(int).MakeByRefType() }, typeof(Detours), "UI_Update_Detour");
+                    AddHook(type.AsType(), "SetStaticDefaults", typeof(AccessoryHooks), "SetStaticDefaults_Hook");
+                }
+                foreach (var adj in BuffHooks.DBCA_Adjustments)
+                {
+                    var type = dbca.Code.DefinedTypes.First(x => x.Name.Equals(adj.Key));
+
+                    AddHook(type.AsType(), "SetStaticDefaults", typeof(BuffHooks), "SetStaticDefaults_Hook");
+                    AddHook(type.AsType(), "Update", new Type[] { typeof(Player), typeof(int).MakeByRefType() }, typeof(BuffHooks), "DBCA_Update_Hook");
+                }
             }
 
         }
@@ -70,19 +117,38 @@ namespace DBTBalance
             for (int i = 0; i < Detours.Count; i++)
                 if (Detours[i].IsApplied)
                     Detours[i].Dispose();
-        }
-
-        internal static void SaveConfig(BalanceConfig cfg)
-        {
-            MethodInfo saveMethodInfo = typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic);
-            if (saveMethodInfo != null)
-            {
-                saveMethodInfo.Invoke(null, new object[] { cfg });
-                return;
-            }
-            Instance.Logger.Warn("In-game SaveConfig failed, code update required");
+            for (int i = 0; i < Hooks.Count; i++)
+                if (Hooks[i].IsApplied)
+                    Hooks[i].Dispose();
         }
         
+        public void AddHook(Type type, string name, Type to, string toName)
+        {
+            Logger.Info($"type {type.FullName}   name {name}   methodType Method   to {to.FullName}   toName {toName}");
+
+            MethodInfo method;
+            method = type.GetMethod(name, flagsAll);
+            
+            var hook = new Hook(method, to.GetMethod(toName, flagsAll));
+
+            hook.Apply();
+
+            Hooks.Add(hook);
+        }
+        public void AddHook(Type type, string name, Type[] args, Type to, string toName)
+        {
+            Logger.Info($"type {type.FullName}   name {name}   methodType Method   to {to.FullName}   toName {toName}");
+
+            MethodInfo method;
+            method = type.GetMethod(name, flagsAll, args);
+
+            var hook = new Hook(method, to.GetMethod(toName, flagsAll));
+
+            hook.Apply();
+
+            Hooks.Add(hook);
+        }
+
         public void AddDetour(Type type, string name, bool methodType, Type to, string toName)
         {
             Logger.Info($"type {type.FullName}   name {name}   methodType {(methodType ? "Method" : "Property")}   to {to.FullName}   toName {toName}");
@@ -113,17 +179,5 @@ namespace DBTBalance
 
         public void AddDetour(Type type, string name) =>
             Detours.Add(new Detour(type.GetMethod(name, flagsAll), GetType().GetMethod("Nothing", flagsAll)));
-
-        public static bool HasField(dynamic obj, string name)
-        {
-            Type objType = obj.GetType();
-
-            if (objType == typeof(ExpandoObject))
-            {
-                return ((IDictionary<string, object>)obj).ContainsKey(name);
-            }
-
-            return objType.BaseType.GetField(name) != null;
-        }
     }
 }

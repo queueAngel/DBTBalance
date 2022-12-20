@@ -4,3 +4,4 @@ version = 0.1
 modReferences = DBZMODPORT, DBZGoatLib
 sortAfter = DBZMODPORT, dbzcalamity
 includeSource = true
+homepage = https://github.com/yoshisman8/DBTBalance/wiki

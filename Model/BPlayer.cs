@@ -17,6 +17,7 @@ using DBTBalance.Helpers;
 using DBZGoatLib.Handlers;
 using DBZGoatLib;
 using static Terraria.ModLoader.PlayerDrawLayer;
+using DBTBalance.Model;
 
 namespace DBTBalance
 {
@@ -27,6 +28,9 @@ namespace DBTBalance
         public bool LSSJ4UnlockMsg;
 
         public DateTime? Offset = null;
+
+        public DateTime? PoweringUpTime = null;
+        public DateTime? LastPowerUpTick = null;
 
         public override void SaveData(TagCompound tag)
         {
@@ -45,45 +49,6 @@ namespace DBTBalance
        
         public static bool MasteredLLSJ4(Player player) => GPlayer.ModPlayer(player).GetMastery(ModContent.BuffType<LSSJ4Buff>()) >= 1f;
         
-        public override void PreUpdateBuffs()
-        {
-            if (ModLoader.HasMod("DBZMODPORT"))
-            {
-                foreach(var adjustment in Detours.DBT_Adjustments)
-                {
-                    if (!Detours.cachedBuffs.ContainsKey(adjustment.Key))
-                        Detours.cachedBuffs[adjustment.Key] = DBTBalance.DBZMOD.Find<ModBuff>(adjustment.Key);
-                    if (!Detours.cachedTypes.ContainsKey(Detours.cachedBuffs[adjustment.Key].Type))
-                        Detours.cachedTypes[Detours.cachedBuffs[adjustment.Key].Type] = adjustment.Key;
-                    Detours.cachedBuffs[adjustment.Key].damageMulti = adjustment.Value.Damage;
-                    Detours.cachedBuffs[adjustment.Key].speedMulti = adjustment.Value.Speed;
-                    Detours.cachedBuffs[adjustment.Key].baseDefenceBonus = adjustment.Value.defense;
-                }
-            }
-            if(ModLoader.HasMod("dbzcalamity"))
-            {
-                foreach(var adjustment in Detours.DBCA_Adjustments)
-                {
-                    if (!Detours.cachedBuffs.ContainsKey(adjustment.Key))
-                        Detours.cachedBuffs[adjustment.Key] = DBTBalance.DBCA.Find<ModBuff>(adjustment.Key);
-                    if (!Detours.cachedTypes.ContainsKey(Detours.cachedBuffs[adjustment.Key].Type))
-                        Detours.cachedTypes[Detours.cachedBuffs[adjustment.Key].Type] = adjustment.Key;
-
-                    Detours.cachedBuffs[adjustment.Key].damageMulti = adjustment.Value.Damage;
-                    Detours.cachedBuffs[adjustment.Key].speedMulti = adjustment.Value.Speed;
-                    Detours.cachedBuffs[adjustment.Key].baseDefenceBonus = adjustment.Value.defense;
-
-                    if (adjustment.Value.dodgeBonus > 0f)
-                        Detours.cachedBuffs[adjustment.Key].dodgeChance = adjustment.Value.dodgeBonus;
-                    if(adjustment.Value.minDamage > 0f)
-                        Detours.cachedBuffs[adjustment.Key].minDamage = adjustment.Value.minDamage;
-                    if (adjustment.Value.maxDamage > 0f)
-                        Detours.cachedBuffs[adjustment.Key].maxDamage = adjustment.Value.maxDamage;
-
-                }
-            }
-        }
-
         public override void PostUpdateEquips()
         {
             base.PostUpdateEquips();
@@ -112,6 +77,17 @@ namespace DBTBalance
 
                 if (IsLSSJ3 && !Offset.HasValue)
                     Offset = DateTime.Now;
+
+                if (BalanceConfigServer.Instance.KiRework)
+                {
+                    var MyPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
+                    dynamic myPlayer = MyPlayerClass.GetMethod("ModPlayer").Invoke(null, new object[] { Player });
+                    var kiRegenTimer = MyPlayerClass.GetField("kiRegenTimer", DBTBalance.flagsAll);
+                    var kiChargeRate = MyPlayerClass.GetField("kiChargeRate");
+
+                    kiRegenTimer.SetValue(myPlayer, 0);
+                    kiChargeRate.SetValue(myPlayer, myPlayer.kiChargeRate + myPlayer.kiRegen);
+                }
             }
         }
 
@@ -122,21 +98,33 @@ namespace DBTBalance
                 LSSJ4UnlockMsg = true;
                 Main.NewText("You have unlocked your true potential.\nWhile in Legendary Super Saiyain 3 form press the Transform button once more to reach higher power.", Color.Green);
             }
-            var buff = Detours.GetExternalForm(Player);
-            
 
-            if (buff != null)
+            if (ModLoader.HasMod("DBZMODPORT"))
             {
-                string name = Detours.cachedTypes[buff.Type];
-                if (name != "UIBuff" && name != "UEBuff" && name != "UISignBuff")
+                if (BalanceConfigServer.Instance.KiRework)
                 {
-                    float dmg = (float)(1.0 + ((double)(buff.damageMulti) - 1.0) * 0.5);
+                    var MyPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
+                    dynamic myPlayer = MyPlayerClass.GetMethod("ModPlayer").Invoke(null, new object[] { Player });
+                    var kiChargeRate = MyPlayerClass.GetField("kiChargeRate");
 
-                    Player.GetDamage(DamageClass.Generic) *= dmg;
+                    kiChargeRate.SetValue(myPlayer, myPlayer.kiChargeRate + myPlayer.kiRegen);
                 }
             }
         }
+        public override void ResetEffects()
+        {
+            if (ModLoader.HasMod("DBZMODPORT"))
+            {
+                if (BalanceConfigServer.Instance.KiRework)
+                {
+                    var MyPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
+                    dynamic myPlayer = MyPlayerClass.GetMethod("ModPlayer").Invoke(null, new object[] { Player });
+                    var kiChargeRate = MyPlayerClass.GetField("kiChargeRate");
 
+                    kiChargeRate.SetValue(myPlayer, myPlayer.kiChargeRate + myPlayer.kiRegen);
+                }
+            }
+        }
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             var modPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
@@ -178,14 +166,5 @@ namespace DBTBalance
             base.OnRespawn(player);
         }
 
-        public override void HideDrawLayers(PlayerDrawSet drawInfo)
-        {
-            if (LSSJ4Active)
-            {
-                
-                drawInfo.colorArmorBody = new Color(0,0,0,0);
-                drawInfo.colorShirt = new Color(0,0,0,0);
-            }
-        }
     }
 }
