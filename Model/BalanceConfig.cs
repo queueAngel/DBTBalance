@@ -45,7 +45,7 @@ namespace DBTBalance.Model
         public bool LongerTransform;
 
         [Label("Super Saiyan Transformation Tweaks")]
-        [Tooltip("Rebalances the bonuses granted by transformations to reduce power creep.")]
+        [Tooltip("(FULL GAME RELAUNCH REQUIRED) Rebalances the bonuses granted by transformations to reduce power creep.")]
         [DefaultValue(true)]
         public bool SSJTweaks;
     }
