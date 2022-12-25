@@ -1,11 +1,12 @@
-This mod aims to rebalance the Super Saiyan forms from the Dragon Ball Terraria and Dragon Ball Calamity Addon mods
-by greatly toning down the damage, speed and defense bonuses granted by these forms. Ensuring that usage of these forms 
-does not invalidate the challenges of the game. 
+[h1] Dragon Ball Terraria: Rebalanced[/h1]
+This small mod has one simple goal. Take the excellent foundation laid out by the Dragon Ball Terraria v1.0.9.9 mod and fix some of its issues in regard to balancing. Including things such as nerfing Super Saiyan forms, fixing balance concerns in regards to accessories and even introducing an entire new form to make the Legendary trait not fall off after Moon Lord.
 
-Although this mod supports Dragon Ball Calamity Add-on, it is not required to use this mod. Only Dragon Ball Terraria is required.
+[h3][url=https://discord.gg/terrariaballsuper]Join the Discord Community![/url][/h3]
+
+[h2]Although this mod supports Dragon Ball Calamity Add-on, it is not required to use this mod. Only Dragon Ball Terraria is required.[/h2]
+
+[h2][url=https://github.com/yoshisman8/DBTBalance/wiki]Check the full list of changes here![/url][/h2]
+
 
 Sprites Edited/Based on Dragon Ball Terraria's Sprites. Credit to the original team.
-
-Huge thanks to @Kosmic#4494 for his coding expertise, this mod would not be possible without him.
-
-Also shoutouts to @moofiche#9598 for gathering data to help balance all aspects of this mod.
+Huge thanks to KosmicShovel for his immense C# expertise, this mod would not be possible without his guidance.
