@@ -46,6 +46,7 @@ namespace DBTBalance.Model
 
         [Label("Super Saiyan Transformation Tweaks")]
         [Tooltip("(FULL GAME RELAUNCH REQUIRED) Rebalances the bonuses granted by transformations to reduce power creep.")]
+        [ReloadRequired]
         [DefaultValue(true)]
         public bool SSJTweaks;
     }

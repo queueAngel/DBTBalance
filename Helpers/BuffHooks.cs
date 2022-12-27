@@ -1,4 +1,5 @@
 ﻿using DBTBalance.Model;
+using DBZGoatLib.Handlers;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -122,6 +123,12 @@ namespace DBTBalance.Helpers
             var KiDamage = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetField("KiDamage");
             var kiDrainMulti = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetField("kiDrainMulti");
 
+            
+            if (TransformationHandler.IsAnythingBut(player,self.Type,true))
+            {
+                TransformationHandler.ClearTransformations(player);
+                return;
+            }
 
             Dust dust = Dust.NewDustPerfect(player.Center + new Vector2(Utils.NextFloat(Main.rand, (float)(-(float)player.width - 2), (float)(player.width + 2)), Utils.NextFloat(Main.rand, (float)(-(float)player.height - 6), (float)(player.height + 6))), 221, new Vector2?(Utils.RotatedByRandom(new Vector2(0f, -1.5f), (double)MathHelper.ToRadians(80f))), 0, default(Color), 1f);
             Lighting.AddLight(player.Center, Color.Blue.ToVector3());

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DBTBalance.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -96,7 +97,7 @@ namespace DBTBalance.Helpers
             { "IceTalisman", "'A frozen talisman that seems to make even your soul cold.'\n2% Increased Ki damage\n+120 ki/sec charge rate.\nCharging grants a aura of frostburn around you." },
             { "KiChip", "'A piece of a ki fragment.'\n+60 ki/sec charge rate." },
             { "LuminousSectum", "'It radiates with unstable energy.'\n4% increased ki damage.\n+250 max ki.\nHitting enemies has a small chance to fire off homing ki sparks." },
-            { "MajinNucleus", "'The pulsing nucleus of a invicible being.'\nMassivly increased health regen.\n+360 ki/sec charge rate.\n-1500 max ki." },
+            { "MajinNucleus", "'The pulsing nucleus of a invicible being.'\nMassively increased health regen.\n+360 ki/sec charge rate.\n-1500 max ki." },
             { "MetamoranSash", "'Your own bad energy will be your undoing!'\n5% Increased Ki damage.\n30% Reduced Ki usage.\n15% chance to do double damage." },
             { "PureEnergyCirclet" , "'It radiates a unbelievably pure presence.'\n5% Increased Ki damage.\n+120 ki/sec charge rate.\n+300 Max Ki.\nCharging grants a aura of inferno and frostburn around you." },
             { "RadiantTotem", "'It explodes with radiant energy.'\n+500 Max Ki\n+120 ki/sec charge rate." },
@@ -156,7 +157,8 @@ namespace DBTBalance.Helpers
                 if (HasAccessory(player, upgradePaths[itemName]))
                     return;
 
-            orig(self, player, hideVisual);
+            if(orig != null && player != null && self != null)
+                orig(self, player, hideVisual);
 
             if(DamageAdjustment.TryGetValue(itemName, out var amount))
             {
