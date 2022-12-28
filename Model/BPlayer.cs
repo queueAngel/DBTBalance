@@ -26,6 +26,7 @@ namespace DBTBalance
         public bool LSSJ4Achieved;
         public bool LSSJ4Active;
         public bool LSSJ4UnlockMsg;
+        public bool MP_Unlock;
 
         public DateTime? Offset = null;
 
@@ -93,10 +94,23 @@ namespace DBTBalance
 
         public override void PostUpdate()
         {
+            if (MP_Unlock && Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                dynamic modPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { Player });
+
+                float mastery = (float)modPlayer.masteryLevelLeg3;
+
+                if (mastery >= 1f)
+                {
+                    LSSJ4Achieved = true;
+                    MP_Unlock = false;
+                }
+            }
             if(LSSJ4Achieved && !LSSJ4UnlockMsg)
             {
                 LSSJ4UnlockMsg = true;
-                Main.NewText("You have unlocked your true potential.\nWhile in Legendary Super Saiyain 3 form press the Transform button once more to reach higher power.", Color.Green);
+                if(Main.netMode != NetmodeID.Server)
+                    Main.NewText("You have unlocked your true potential.\nWhile in Legendary Super Saiyain 3 form press the Transform button once more to reach higher power.", Color.Green);
             }
 
             if (ModLoader.HasMod("DBZMODPORT"))

@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using Terraria.Audio;
 using Microsoft.Xna.Framework;
+using DBTBalance.Helpers;
 
 namespace DBTBalance
 {
@@ -16,12 +17,12 @@ namespace DBTBalance
         public override bool InstancePerEntity => true;
         public override void OnKill(NPC npc)
         {
-            if (ModLoader.TryGetMod("DBZMODPORT", out Mod dbzmod))
+            if (ModLoader.HasMod("DBZMODPORT"))
             {
                 if (Main.netMode == NetmodeID.SinglePlayer)
                 {
                     BPlayer Player = Main.CurrentPlayer.GetModPlayer<BPlayer>();
-                    var ModPlayerClass = dbzmod.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
+                    var ModPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
                     var getModPlayer = ModPlayerClass.GetMethod("ModPlayer");
 
                     var dbzPlayer = getModPlayer.Invoke(null, new object[] { Player.Player });
@@ -46,18 +47,14 @@ namespace DBTBalance
                             if (player.active)
                             {
                                 BPlayer modPlayer = player.GetModPlayer<BPlayer>();
-                                var ModPlayerClass = dbzmod.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
-                                var getModPlayer = ModPlayerClass.GetMethod("ModPlayer");
 
-                                var dbzPlayer = getModPlayer.Invoke(null, new object[] { player });
-                                var masteryfield = ModPlayerClass.GetField("masteryLevelLeg3");
-                                float mastery = (float)masteryfield.GetValue(dbzPlayer);
-
-                                if (!modPlayer.LSSJ4Achieved && mastery >= 1f)
+                                if (!modPlayer.LSSJ4Achieved)
                                 {
                                     if (npc.type == NPCID.MoonLordCore)
                                     {
+                                        modPlayer.MP_Unlock = true;
                                         modPlayer.LSSJ4Achieved = true;
+                                        BNetworkHandler.SendUnlockStatus(i, true);
                                     }
                                 }
                             }

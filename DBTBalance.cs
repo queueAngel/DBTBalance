@@ -179,5 +179,10 @@ namespace DBTBalance
 
         public void AddDetour(Type type, string name) =>
             Detours.Add(new Detour(type.GetMethod(name, flagsAll), GetType().GetMethod("Nothing", flagsAll)));
+
+        public override void HandlePacket(BinaryReader reader, int whoAmI)
+        {
+            BNetworkHandler.HandlePacket(reader, whoAmI);
+        }
     }
 }
