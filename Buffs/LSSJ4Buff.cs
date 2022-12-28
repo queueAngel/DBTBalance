@@ -44,11 +44,11 @@ namespace DBTBalance.Buffs
         }
 
         public static TransformationInfo LSSJ4Info => 
-            new TransformationInfo(ModContent.BuffType<LSSJ4Buff>(), 
-                "LSSJ4Buff", "Legendary Super Saiyan 4", 
-                Color.HotPink, CanTransform , OnTransform, PostTransform, 
-                new AnimationData(new AuraData("DBTBalance/Assets/LSSJ4Aura", 4, 3, BlendState.AlphaBlend,new Color(250, 74, 67), "DBTBalance/Assets/LSSJ4Hair"), true, 
-                    new SoundData("DBZMODPORT/Sounds/SSJAscension", "DBZMODPORT/Sounds/SSJ3", 260)));
+            new TransformationInfo(ModContent.BuffType<LSSJ4Buff>(),
+                "LSSJ4Buff", false, "Legendary Super Saiyan 4", 
+                Color.HotPink, CanTransform , OnTransform, PostTransform,
+                new AnimationData(new AuraData("DBTBalance/Assets/LSSJ4Aura", 4, BlendState.AlphaBlend,new Color(250, 74, 67)), true, 
+                    new SoundData("DBZMODPORT/Sounds/SSJAscension", "DBZMODPORT/Sounds/SSJ3", 260), "DBTBalance/Assets/LSSJ4Hair"));
         
         public static bool CanTransform(Player player)
         {
