@@ -53,14 +53,20 @@ namespace DBTBalance.Buffs
         public static bool CanTransform(Player player)
         {
             var modPlayer = player.GetModPlayer<BPlayer>();
+
+            if (!modPlayer.Offset.HasValue)
+                return false;
+
             return !player.HasBuff<LSSJ4Buff>() &&
                 player.HasBuff(DBTBalance.DBZMOD.Find<ModBuff>("LSSJ3Buff").Type) &&
-                modPlayer.LSSJ4Achieved;
+                modPlayer.LSSJ4Achieved &&
+                (DateTime.Now - modPlayer.Offset.Value).TotalSeconds >= 0.8f;
         }
         public static void OnTransform(Player player)
         {
             var modPlayer = player.GetModPlayer<BPlayer>();
             modPlayer.LSSJ4Active = true;
+            modPlayer.Offset = null;
 
             var transMenu = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransMenu"));
             var menuSelection = transMenu.GetField("menuSelection");

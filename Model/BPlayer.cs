@@ -141,19 +141,9 @@ namespace DBTBalance
         }
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            var modPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
-            var modPlayer = modPlayerClass.GetMethod("ModPlayer").Invoke(null, new object[] { Player });
-
-            if (TransformationHandler.TransformKey.JustPressed && !LSSJ4Active && Offset.HasValue && TransformationHandler.IsTransformed(Player, false))
+            if (TransformationHandler.TransformKey.JustPressed)
             {
-                var transformationHelper = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransformationHelper"));
-                bool IsLSSJ3 = (bool)transformationHelper.GetMethod("IsLSSJ3").Invoke(null, new object[] { Player });
-
-                if (IsLSSJ3 && (DateTime.Now - Offset.Value).TotalSeconds >= 0.8f)
-                {
-                    TransformationHandler.Transform(Player, LSSJ4Buff.LSSJ4Info);
-                    Offset = null;
-                }
+                TransformationHandler.Transform(Player, LSSJ4Buff.LSSJ4Info);
             }
             else if (TransformationHandler.PowerDownKey.JustPressed && LSSJ4Active && !TransformationHandler.EnergyChargeKey.Current)
             {
