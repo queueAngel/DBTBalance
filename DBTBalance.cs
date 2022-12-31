@@ -115,11 +115,17 @@ namespace DBTBalance
             DBZGoatLib.Handlers.TransformationHandler.UnregisterTransformation(LSSJ4Buff.LSSJ4Info);
 
             for (int i = 0; i < Detours.Count; i++)
-                if (Detours[i].IsApplied)
+                if (Detours[i].IsApplied) {
+                    Detours[i].Undo();
+                    Detours[i].Free();
                     Detours[i].Dispose();
+                }
             for (int i = 0; i < Hooks.Count; i++)
-                if (Hooks[i].IsApplied)
+                if (Hooks[i].IsApplied) {
+                    Hooks[i].Undo();
+                    Hooks[i].Free();
                     Hooks[i].Dispose();
+                }
         }
         
         public void AddHook(Type type, string name, Type to, string toName)
