@@ -101,7 +101,6 @@ namespace DBTBalance.Helpers
 
             if(DBT_Adjustments.TryGetValue(name, out var adjustments))
             {
-
                 float dmg = (float)(1.0 + ((double)(adjustments.Damage) - 1.0) * 0.5);
 
                 player.GetDamage(DamageClass.Generic) *= dmg;
@@ -223,7 +222,7 @@ namespace DBTBalance.Helpers
                 player.jumpSpeedBoost = 1f;
             }
             player.jumpSpeedBoost *= speedMulti * modPlayer.bonusSpeedMultiplier;
-            player.GetDamage(DamageClass.Generic) += damageMulti - 1f;
+            player.GetDamage(DamageClass.Generic) *= damageMulti;
 
             kiDrainMulti.SetValue(modPlayer, attackDrainMulti);
             KiDamage.SetValue(modPlayer, modPlayer.KiDamage * damageMulti);
