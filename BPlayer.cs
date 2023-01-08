@@ -18,6 +18,7 @@ using DBZGoatLib.Handlers;
 using DBZGoatLib;
 using static Terraria.ModLoader.PlayerDrawLayer;
 using DBTBalance.Model;
+using DBZGoatLib.Model;
 
 namespace DBTBalance
 {
@@ -32,6 +33,8 @@ namespace DBTBalance
 
         public DateTime? PoweringUpTime = null;
         public DateTime? LastPowerUpTick = null;
+
+        private TransformationInfo? Form = null;
 
         public override void SaveData(TagCompound tag)
         {
@@ -141,34 +144,68 @@ namespace DBTBalance
         }
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            if (TransformationHandler.TransformKey.JustPressed)
-            {
-                TransformationHandler.Transform(Player, LSSJ4Buff.LSSJ4Info);
-            }
-            else if (TransformationHandler.PowerDownKey.JustPressed && LSSJ4Active && !TransformationHandler.EnergyChargeKey.Current)
-            {
-                Offset = null;
+            if(!Form.HasValue || TransformationHandler.TransformKey.JustPressed)
+                Form = Player.GetModPlayer<GPlayer>().FetchTransformation();
+            else if (Form.HasValue && !TransformationHandler.TransformKey.Current)
+                Form = Player.GetModPlayer<GPlayer>().FetchTransformation();
+
+
+            if (!Form.HasValue && TransformationHandler.PowerDownKey.JustPressed)
                 TransformationHandler.ClearTransformations(Player);
-            }
-            else if (TransformationHandler.EnergyChargeKey.Current && TransformationHandler.PowerDownKey.JustPressed && LSSJ4Active)
+
+            if (!BalanceConfigServer.Instance.LongerTransform)
             {
-                Offset = null;
-                TransformationHandler.ClearTransformations(Player);
-                var THandler = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransformationHelper"));
-
-                var doTransform = THandler.GetMethod("DoTransform");
-
-                var lssj3 = THandler.GetProperty("LSSJ3").GetValue(null);
-
-                doTransform.Invoke(null, new object[] { Player, lssj3, DBTBalance.DBZMOD });
+                if (Form.HasValue)
+                    TransformationHandler.Transform(Player, Form.Value);
+            }
+            else
+            {
+                HandleTransformationInput();
             }
         }
 
-        public override void OnRespawn(Player player)
+        public void HandleTransformationInput()
         {
-            TransformationHandler.ClearTransformations(player);
-            base.OnRespawn(player);
-        }
+            dynamic self = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { Player });
+            if (TransformationHandler.TransformKey.Current && !TransformationHandler.IsTransformed(Player))
+            {
+                self.isCharging = true;
 
+                if (!PoweringUpTime.HasValue)
+                {
+                    PoweringUpTime = DateTime.Now;
+                    LastPowerUpTick = DateTime.Now;
+
+                    CombatText.NewText(Player.Hitbox, Color.Yellow, "3");
+                    return;
+                }
+
+                else if (PoweringUpTime.HasValue && LastPowerUpTick.HasValue)
+                {
+                    int secs = (int)(3 - (DateTime.Now - PoweringUpTime.Value).TotalSeconds);
+                    if ((DateTime.Now - LastPowerUpTick.Value).TotalMilliseconds >= 666 && secs > 0)
+                    {
+                        LastPowerUpTick = DateTime.Now;
+                        CombatText.NewText(Player.Hitbox, Color.Yellow, $"{secs}");
+                        return;
+                    }
+                    if ((DateTime.Now - PoweringUpTime.Value).TotalMilliseconds >= 2000)
+                    {
+                        if (Form.HasValue)
+                            TransformationHandler.Transform(Player, Form.Value);
+                    }
+                }
+            }
+            else if (TransformationHandler.IsTransformed(Player))
+            {
+                if (Form.HasValue)
+                    TransformationHandler.Transform(Player, Form.Value);
+            }
+            else
+            {
+                PoweringUpTime = null;
+                LastPowerUpTick = null;
+            }
+        }
     }
 }

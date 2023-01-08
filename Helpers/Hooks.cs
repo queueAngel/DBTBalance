@@ -35,6 +35,8 @@ namespace DBTBalance.Helpers
             orig(self);
             self.kiChargeRate += regen;
         }
+
+
         public static void MyPlayer_HandleTransformations_Hook(dynamic self)
         {
             if(!BalanceConfigServer.Instance.LongerTransform)
@@ -112,13 +114,20 @@ namespace DBTBalance.Helpers
                         buff = TransformationHelper.GetMethod("GetNextTransformationStep").Invoke(null, new object[] { self.Player });
                 }
                 else
-                    buff = TransformationHelper.GetMethod("GetBuffFromMenuSelection").Invoke(null, new object[] { DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransMenu")).GetField("menuSelection").GetValue(null) });
+                {
+                    var selection = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransMenu")).GetField("menuSelection").GetValue(null);
+                    buff = TransformationHelper.GetMethod("GetBuffFromMenuSelection").Invoke(null, new object[] { selection });
+                }
             }
             else if (TransformationHandler.PowerDownKey.JustPressed && !(bool)TransformationHelper.GetMethod("IsKaioken", new Type[] { typeof(Player) }).Invoke(null, new object[] { self.Player }))
             {
                 buff = TransformationHelper.GetMethod("GetPreviousTransformationStep").Invoke(null, new object[] { self.Player });
             }
-            if (buff == null || !(bool)TransformationHelper.GetMethod("CanTransform", new Type[] { typeof(Player), DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("BuffInfo")).AsType() }).Invoke(null, new object[] { self.Player, buff }))
+            if (buff == null)
+                return;
+
+            var canTransform = TransformationHelper.GetMethod("CanTransform", new Type[] { typeof(Player), DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("BuffInfo")).AsType() });
+            if (!(bool)canTransform.Invoke(null, new object[] { self.Player, buff }))
                 return;
 
             TransformationHelper.GetMethod("DoTransform").Invoke(null, new object[] { self.Player, buff, DBTBalance.DBZMOD });

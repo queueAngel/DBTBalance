@@ -19,80 +19,80 @@ namespace DBTBalance.Buffs
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Legendary Super Saiyan 4");
+            kiDrainRate = 4.5f;
+            kiDrainRateWithMastery = 1.5f;
+
             if (BalanceConfigServer.Instance.SSJTweaks)
             {
-                damageMulti = 1f;
+                damageMulti = 2f;
                 speedMulti = 1.5f;
-                kiDrainRate = 4.5f;
-                kiDrainRateWithMastery = 2.5f;
                 attackDrainMulti = 1.70f;
                 baseDefenceBonus = 22;
             }
             else
             {
-                damageMulti = 3.8f;
+                damageMulti = 4.8f;
                 speedMulti = 3.50f;
-                kiDrainRate = 4.5f;
-                kiDrainRateWithMastery = 2.5f;
                 attackDrainMulti = 1.70f;
                 baseDefenceBonus = 41;
             }
-            
-
             base.SetStaticDefaults();
         }
 
-        public static TransformationInfo LSSJ4Info => 
-            new TransformationInfo(ModContent.BuffType<LSSJ4Buff>(),
-                "LSSJ4Buff", false, "Legendary Super Saiyan 4", 
-                Color.HotPink, CanTransform , OnTransform, PostTransform,
-                new AnimationData(new AuraData("DBTBalance/Assets/LSSJ4Aura", 4, BlendState.AlphaBlend,new Color(250, 74, 67)), true, 
-                    new SoundData("DBZMODPORT/Sounds/SSJAscension", "DBZMODPORT/Sounds/SSJ3", 260), "DBTBalance/Assets/LSSJ4Hair"));
-        
-        public static bool CanTransform(Player player)
+        public override bool CanTransform(Player player)
         {
             var modPlayer = player.GetModPlayer<BPlayer>();
-
-            if (!modPlayer.Offset.HasValue)
-                return false;
-
-            return !player.HasBuff<LSSJ4Buff>() &&
-                player.HasBuff(DBTBalance.DBZMOD.Find<ModBuff>("LSSJ3Buff").Type) &&
-                modPlayer.LSSJ4Achieved &&
-                (DateTime.Now - modPlayer.Offset.Value).TotalSeconds >= 0.8f;
+            return !player.HasBuff<LSSJ4Buff>() && modPlayer.LSSJ4Achieved && player.GetModPlayer<GPlayer>().Trait == "Legendary";
         }
-        public static void OnTransform(Player player)
+
+        public override void OnTransform(Player player) => 
+            player.GetModPlayer<BPlayer>().LSSJ4Active = true;
+        public override void PostTransform(Player player) =>
+            player.GetModPlayer<BPlayer>().LSSJ4Active = false;
+
+        public override string FormName() => "Legendary Super Saiyan 4";
+
+        public override bool Stackable() => false;
+
+        public override Color TextColor() => Color.HotPink;
+
+        public override SoundData SoundData() => new SoundData("DBZMODPORT/Sounds/SSJAscension", "DBZMODPORT/Sounds/SSJ3", 260);
+        public override AuraData AuraData() => new AuraData("DBTBalance/Assets/LSSJ4Aura", 4, BlendState.AlphaBlend, new Color(250, 74, 67));
+        public override Gradient KiBarGradient() => new Gradient(new Color(255, 56, 99)).AddStop(1f, new Color(156, 0, 34));
+
+        public override string HairTexturePath() => "DBTBalance/Assets/LSSJ4Hair";
+
+        public override bool SaiyanSparks() => true;
+
+    }
+
+    public class LSSJ4Panel : TransformationTree
+    {
+        public override bool Complete() => false;
+
+        public override Connection[] Connections() => new Connection[]
         {
-            var modPlayer = player.GetModPlayer<BPlayer>();
-            modPlayer.LSSJ4Active = true;
-            modPlayer.Offset = null;
+            new Connection(3,3,1,false,new Gradient(Color.LightGreen).AddStop(0.60f, new Color(255, 56, 99)))
+        };
 
-            var transMenu = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransMenu"));
-            var menuSelection = transMenu.GetField("menuSelection");
-            var none = Enum.Parse(menuSelection.FieldType, "None");
-            menuSelection.SetValue(null, none);
+        public override string Name() => "LSSJ Partial Tree";
 
-        }
-        public static void PostTransform(Player player)
+        public override Node[] Nodes() => new Node[]
         {
-            var modPlayer = player.GetModPlayer<BPlayer>();
-            modPlayer.LSSJ4Active = false;
+            new Node(4,3,"LSSJ4Buff","DBTBalance/Buffs/LSSJ4Buff","Only defeating a foe of cosmic proportions can unlock this power.",UnlockCondition,DiscoverCondition)
+        };
 
-            var transMenu = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransMenu"));
-            var menuSelection = transMenu.GetField("menuSelection");
-            dynamic none = Enum.Parse(menuSelection.FieldType, "LSSJ3");
-            menuSelection.SetValue(null, none);
-
-            modPlayer.Offset = null;
-        }
-        public override void Update(Player player, ref int buffIndex)
+        public bool UnlockCondition(Player player)
         {
-            var transMenu = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransMenu"));
-            var menuSelection = transMenu.GetField("menuSelection");
-            dynamic none = Enum.Parse(menuSelection.FieldType, "None");
-            menuSelection.SetValue(null, none);
-            base.Update(player, ref buffIndex);
+            return player.GetModPlayer<BPlayer>().LSSJ4Achieved && player.GetModPlayer<GPlayer>().Trait == "Legendary";
         }
+        public bool DiscoverCondition(Player player)
+        {
+            var MyPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
+            dynamic ModPlayer = MyPlayer.GetMethod("ModPlayer").Invoke(null, new object[] { player });
+
+            return (bool)ModPlayer.lssj3Achieved && player.GetModPlayer<GPlayer>().Trait == "Legendary";
+        }
+        public override bool Condition(Player player) => true;
     }
 }

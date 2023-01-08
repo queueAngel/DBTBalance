@@ -12,7 +12,7 @@ namespace DBTBalance.Helpers
 {
     internal static class BNetworkHandler
     {
-        public static byte SYNC_UNLOCK_STATUS = 1;
+        public const byte SYNC_UNLOCK_STATUS = 1;
         public static void SendUnlockStatus(int who, bool value)
         {
             ModPacket packet = DBTBalance.Instance.GetPacket();
@@ -39,7 +39,7 @@ namespace DBTBalance.Helpers
 
             switch (command)
             {
-                case 1:
+                case SYNC_UNLOCK_STATUS:
                     int who = reader.ReadInt32();
                     bool state = reader.ReadBoolean();
                     ReceiveUnlockStatus(who, state);

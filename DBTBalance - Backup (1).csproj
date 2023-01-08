@@ -21,4 +21,7 @@
       <HintPath>..\ModAssemblies\DBZMODPORT_v0.3.3.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="cp /Y &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(USERPROFILE)\Documents\My Games\Terraria\tModLoader\ModSources\ModAssemblies\&quot;" />
+  </Target>
 </Project>

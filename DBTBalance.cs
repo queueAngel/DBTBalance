@@ -37,7 +37,8 @@ namespace DBTBalance
             if (ModLoader.TryGetMod("DBZGoatLib", out Mod goat))
             {
                 GOATLIB = goat;
-                DBZGoatLib.Handlers.TransformationHandler.RegisterTransformation(LSSJ4Buff.LSSJ4Info);
+
+                AddDetour(typeof(GPlayer), "ProcessTransformationTriggers");
             }
             if (ModLoader.TryGetMod("DBZMODPORT", out Mod dbz))
             {
@@ -51,7 +52,6 @@ namespace DBTBalance
                 AddHook(BaseProj.AsType(), "ModifyHitNPC", typeof(Hooks), "BaseBeam_ModifyHitNPC_Hook");
 
                 AddHook(myPlayer.AsType(), "ResetEffects", typeof(Hooks), "MyPlayer_ResetEffects_Hook");
-                AddHook(myPlayer.AsType(), "HandleTransformations", typeof(Hooks), "MyPlayer_HandleTransformations_Hook");
 
                 AddHook(baseBeamCharge.AsType(), "GetBeamPowerMultiplier", typeof(Hooks), "BaseBeamCharge_GetBeamPowerMultiplier_Hook");
                 AddHook(baseBeamCharge.AsType(), "GetBeamDamage", typeof(Hooks), "BaseBeamCharge_GetBeamDamage_Hook");
@@ -112,24 +112,20 @@ namespace DBTBalance
             DBCA = null;
             GOATLIB = null;
 
-            DBZGoatLib.Handlers.TransformationHandler.UnregisterTransformation(LSSJ4Buff.LSSJ4Info);
-
             for (int i = 0; i < Detours.Count; i++)
                 if (Detours[i].IsApplied)
-                    if (Detours[i].IsApplied)
-                    {
-                        Detours[i].Undo();
-                        Detours[i].Free();
-                        Detours[i].Dispose();
-                    }
+                {
+                    Detours[i].Undo();
+                    Detours[i].Free();
+                    Detours[i].Dispose();
+                }
             for (int i = 0; i < Hooks.Count; i++)
                 if (Hooks[i].IsApplied)
-                    if (Hooks[i].IsApplied)
-                    {
-                        Hooks[i].Undo();
-                        Hooks[i].Free();
-                        Hooks[i].Dispose();
-                    }
+                {
+                    Hooks[i].Undo();
+                    Hooks[i].Free();
+                    Hooks[i].Dispose();
+                }
         }
         
         public void AddHook(Type type, string name, Type to, string toName)
@@ -158,7 +154,6 @@ namespace DBTBalance
 
             Hooks.Add(hook);
         }
-
         public void AddDetour(Type type, string name, bool methodType, Type to, string toName)
         {
             Logger.Info($"type {type.FullName}   name {name}   methodType {(methodType ? "Method" : "Property")}   to {to.FullName}   toName {toName}");
@@ -179,17 +174,15 @@ namespace DBTBalance
 
             Detours.Add(detour);
         }
-
         public void AddDetour(Type type, string name, Type[] args, Type to, string toName)
         {
             Logger.Info($"type {type.FullName}   name {name}   args {{{string.Join(",", args.Select(a => a.FullName))}}}   to {to.FullName}   toName {toName}");
 
             Detours.Add(new Detour(type.GetMethod(name, args), to.GetMethod(toName, flagsAll)));
         }
-
         public void AddDetour(Type type, string name) =>
             Detours.Add(new Detour(type.GetMethod(name, flagsAll), GetType().GetMethod("Nothing", flagsAll)));
-
+        public void Nothing() { }
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             BNetworkHandler.HandlePacket(reader, whoAmI);
