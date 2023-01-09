@@ -21,19 +21,18 @@ namespace DBTBalance.Buffs
         {
             kiDrainRate = 4.5f;
             kiDrainRateWithMastery = 1.5f;
+            attackDrainMulti = 1.70f;
 
             if (BalanceConfigServer.Instance.SSJTweaks)
             {
-                damageMulti = 2f;
-                speedMulti = 1.5f;
-                attackDrainMulti = 1.70f;
-                baseDefenceBonus = 22;
+                damageMulti = 1.85f;
+                speedMulti = 0.9f;
+                baseDefenceBonus = 78;
             }
             else
             {
                 damageMulti = 4.8f;
                 speedMulti = 3.50f;
-                attackDrainMulti = 1.70f;
                 baseDefenceBonus = 41;
             }
             base.SetStaticDefaults();

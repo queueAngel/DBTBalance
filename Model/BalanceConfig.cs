@@ -29,6 +29,11 @@ namespace DBTBalance.Model
         public static BalanceConfigServer Instance;
 
         [Header("Toggleable Balance Adjustments")]
+        [Label("Armor defense cut")]
+        [Tooltip("(FULL GAME RELAUNCH REQUIRED) Halves the defense bonus of Ki-Class armor to accomodate for Saiyan form defense bonuses.")]
+        [DefaultValue(true)]
+        public bool ArmorCrunch;
+
         [Label("Beam weapon rework")]
         [Tooltip("Changes beam ki weapons to always take 3 seconds to charge.\nMore Charges still mean more damage.")]
         [DefaultValue(true)]

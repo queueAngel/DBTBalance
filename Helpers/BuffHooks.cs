@@ -11,30 +11,85 @@ using Terraria.ModLoader;
 
 namespace DBTBalance.Helpers
 {
-    internal class BuffHooks
+    internal sealed class BuffHooks
     {
         public static Dictionary<string, (float Damage, float Speed, int defense, float drainRate, float masterDrainRate)> DBT_Adjustments = new()
         {
-            { "SSJ1Buff", (1.20f, 1.2f, 4, 0f, 0f) },
-            { "ASSJBuff", (1.25f, 1.2f, 5, 0f, 0f) },
-            { "USSJBuff", (1.28f, 0.9f, 7, 0f, 0f) },
-            { "SuperKaiokenBuff", (1.29f, 1.2f, 7, 0f, 0f) },
-            { "SSJ2Buff", (1.3f, 1.24f, 8, 0f, 0f) },
-            { "LSSJBuff", (1.35f, 1.3f, 6, 0f, 0f) },
-            { "SSJ3Buff", (1.4f, 1.3f, 12, 0f, 0f) },
-            { "LSSJ2Buff", (1.5f, 1.35f, 14, 0f, 0f) },
-            { "SSJGBuff", (1.6f, 1.35f, 16, 0f, 0f) },
-            { "LSSJ3Buff", (1.65f, 1.4f, 20, 0f, 0f) },
-            { "SSJBBuff", (1.75f, 1.55f, 23, 0f, 0f) },
-            { "SSJRBuff", (1.85f, 1.4f, 17, 0f, 0f) }
+            { "SSJ1Buff", (1.20f, 1.10f, 9, 0f, 0f) },
+            { "ASSJBuff", (1.25f, 1.10f, 14, 0f, 0f) },
+            { "USSJBuff", (1.3f, 0.9f, 19, 0f, 0f) },
+            { "SuperKaiokenBuff", (1.3f, 1.10f, 12, 0f, 0f) },
+            { "SSJ2Buff", (1.3f, 1.10f, 15, 0f, 0f) },
+            { "SSJ3Buff", (1.4f, 1.10f, 21, 0f, 0f) },
+            { "SSJGBuff", (1.5f, 1.10f, 30, 0f, 0f) },
+            
+            { "SSJBBuff", (1.75f, 1.30f, 42, 0f, 0f) },
+            { "SSJRBuff", (1.95f, 1.10f, 30, 0f, 0f) }, // 1.80 dmg if DBCA enabled
+
+            { "LSSJBuff", (1.35f, 0.9f, 26, 0f, 0f) },
+            { "LSSJ2Buff", (1.45f, 0.9f, 43, 0f, 0f) },
+            { "LSSJ3Buff", (1.55f, 0.9f, 63, 0f, 0f) },
         };
 
-        public static Dictionary<string, (float Damage, float Speed, int defense, float dodgeBonus, float minDamage, float maxDamage, float drainRate, float masterDrainRate)> DBCA_Adjustments = new()
+        public static Dictionary<string, (float Damage, float Speed, int defense, float minDamage, float maxDamage, float drainRate, float masterDrainRate)> DBCA_Adjustments = new()
         {
-            { "UISignBuff", (1.9f, 1.4f, 20, 0.2f, 0f, 0f, 0f, 0f) },
-            { "UIBuff", (2f, 1.55f, 22, 0.2f, 0f, 0f, 0f, 0f) },
-            { "UEBuff", (2.2f, 1.3f, 18, 0f, 2f, 2.5f, 0f, 0f) }
+            { "PUIBuff", (1.7f, 1.10f, 35, 0f, 0f, 0f, 0f) },
+            { "UEBuff", (2f, 1.15f, 10, 2f, 2.5f, 0f, 0f) }
         };
+
+        public static string BuildTooltip_Hook(dynamic self)
+        {
+            var tHelper = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransformationHelper"));
+
+            dynamic kaioken = tHelper.GetProperty("Kaioken").GetValue(null);
+            dynamic superKaioken = tHelper.GetProperty("SuperKaioken").GetValue(null);
+
+            string currentDisplayString = string.Empty;
+            if (self.Type == (int)kaioken.getBuffId || self.Type == (int)superKaioken.getBuffId)
+            {
+                switch (self.kaiokenLevel)
+                {
+                    case 2:
+                        currentDisplayString = "(x3)\n";
+                        break;
+                    case 3:
+                        currentDisplayString = "(x4)\n";
+                        break;
+                    case 4:
+                        currentDisplayString = "(x10)\n";
+                        break;
+                    case 5:
+                        currentDisplayString = "(x20)\n";
+                        break;
+                }
+            }
+            float dmg = (float)self.damageMulti - 1f;
+            float speed = (float)self.speedMulti - 1f;
+            float DrainRate = 60f * self.kiDrainRate;
+            float DrainRateMastered = 60f * self.kiDrainRateWithMastery;
+            float UsageRate = (float)self.attackDrainMulti - 1f;
+            int defense = self.baseDefenceBonus;
+
+            StringBuilder sb = new StringBuilder();
+
+            if (dmg != 0)
+                sb.Append($"Damage {(dmg>0?"+":"")}{dmg:P2}");
+            if (speed != 0)
+                sb.AppendLine($" | Speed {(dmg > 0 ? "+" : "")}{speed:P2}");
+            if (defense != 0)
+                sb.Append($"Defense {(dmg > 0 ? "+" : "")}{defense}");
+            if (UsageRate != 0)
+                sb.AppendLine($" | Ki Costs {(UsageRate > 0 ? "+" : "")}{UsageRate:P2}");
+            if (DrainRate != 0)
+                sb.AppendLine($"Ki Drain {MathF.Round(DrainRate):N0}/s, {MathF.Round(DrainRateMastered):N0}/s when mastered");
+            if ((int)self.healthDrainRate != 0)
+                sb.AppendLine($"Life Drain: -{(int)self.healthDrainRate / 2:N0}/s.");
+
+            if (self.Name == "SSJRBuff" && ModLoader.HasMod("dbzcalamity"))
+                sb.AppendLine($"+20% Dodge Chance (Costs 300 Ki).");
+
+            return sb.ToString();
+        }
 
         public delegate void orig_SetStaticDefaults(dynamic self);
 
@@ -49,8 +104,11 @@ namespace DBTBalance.Helpers
 
             if (DBT_Adjustments.TryGetValue(name, out var adjustments))
             {
-                if (adjustments.Damage != 0)
-                    self.damageMulti = adjustments.Damage;
+                if (ModLoader.HasMod("dbzcalamity") && name == "SSJRBuff")
+                    self.damageMulti = 1.80f;
+                else
+                    if (adjustments.Damage != 0)
+                        self.damageMulti = adjustments.Damage;
                 if (adjustments.Speed != 0)
                     self.speedMulti = adjustments.Speed;
                 if (adjustments.defense != 0)
@@ -79,11 +137,9 @@ namespace DBTBalance.Helpers
                     if (adjustments2.masterDrainRate != 0)
                         self.kiDrainRateWithMastery = adjustments2.masterDrainRate;
                     if (adjustments2.minDamage != 0)
-                        self.minDamage = adjustments2.minDamage;
+                        self.MinDamage = adjustments2.minDamage;
                     if (adjustments2.maxDamage != 0)
-                        self.maxDamage = adjustments2.maxDamage;
-                    if (adjustments2.dodgeBonus != 0)
-                        self.dodgeChance = adjustments2.dodgeBonus;
+                        self.MaxDamage = adjustments2.maxDamage;
                 }
             }
         }
@@ -104,128 +160,15 @@ namespace DBTBalance.Helpers
                 float dmg = (float)(1.0 + ((double)(adjustments.Damage) - 1.0) * 0.5);
 
                 player.GetDamage(DamageClass.Generic) *= dmg;
-            }
-        }
 
-        public static void DBCA_Update_Hook(dynamic self, Player player, ref int buffIndex)
-        {
-            string name = BuffLoader.GetBuff((int)self.Type).Name;
-
-            var dbcPlayerClass = DBTBalance.DBCA.Code.DefinedTypes.First(x => x.Name.Equals("dbzcalamityPlayer"));
-            dynamic dbcPlayer = dbcPlayerClass.GetMethod("ModPlayer").Invoke(null, new object[] { player });
-            bool IsAngelic = (bool)dbcPlayerClass.GetMethod("IsPlayerAngelic").Invoke(dbcPlayer, null);
-            var stopAuraSound = dbcPlayerClass.GetMethod("StopAuraSound");
-            var puiActive = dbcPlayerClass.GetField("puiActive");
-            var uiActive = dbcPlayerClass.GetField("uiActive");
-
-            dynamic modPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { player });
-            var KiDamage = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetField("KiDamage");
-            var kiDrainMulti = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetField("kiDrainMulti");
-
-            
-            if (TransformationHandler.IsAnythingBut(player,self.Type,true))
-            {
-                TransformationHandler.ClearTransformations(player);
-                return;
-            }
-
-            Dust dust = Dust.NewDustPerfect(player.Center + new Vector2(Utils.NextFloat(Main.rand, (float)(-(float)player.width - 2), (float)(player.width + 2)), Utils.NextFloat(Main.rand, (float)(-(float)player.height - 6), (float)(player.height + 6))), 221, new Vector2?(Utils.RotatedByRandom(new Vector2(0f, -1.5f), (double)MathHelper.ToRadians(80f))), 0, default(Color), 1f);
-            Lighting.AddLight(player.Center, Color.Blue.ToVector3());
-            dust.noGravity = true;
-            if (name == "UIBuff")
-            {
-                Dust dust2 = Dust.NewDustPerfect(player.Center + new Vector2(Utils.NextFloat(Main.rand, (float)(-(float)player.width - 6), (float)(player.width + 6)), Utils.NextFloat(Main.rand, (float)(-(float)player.height - 6), (float)(player.height + 6))), 70, new Vector2?(Utils.RotatedByRandom(new Vector2(0f, -1.5f), (double)MathHelper.ToRadians(100f))), 0, default(Color), 1f);
-                Lighting.AddLight(player.Center, Color.Purple.ToVector3());
-                dust2.noGravity = true;
-            }
-            if (player.HasBuff(DBTBalance.DBZMOD.Find<ModBuff>("TiredDebuff").Type))
-            {
-                player.GetDamage(DamageClass.Melee) /= 0.8f;
-                player.GetDamage(DamageClass.Ranged) /= 0.8f;
-                player.GetDamage(DamageClass.Magic) /= 0.8f;
-                player.GetDamage(DamageClass.Summon) /= 0.8f;
-                player.GetDamage(DamageClass.Throwing) /= 0.8f;
-                KiDamage.SetValue(modPlayer, modPlayer.KiDamage / .8f);
-            }
-            float speedMulti = self.speedMulti;
-            float damageMulti = self.damageMulti;
-            float attackDrainMulti = self.attackDrainMulti;
-            int baseDefenceBonus = self.baseDefenceBonus;
-            float kiDrainRate = self.kiDrainRate;
-
-            if (name == "UEBuff")
-            {
-                float maxDamage = self.maxDamage ?? 0f;
-                float minDamage = self.minDamage ?? 0f;
-
-                var ueDamageBonusPerDamageTaken = dbcPlayerClass.GetField("ueDamageBonusPerDamageTaken");
-
-                ueDamageBonusPerDamageTaken.SetValue(dbcPlayer, self.damageBonusPerDamageTaken ?? 0f);
-
-                self.baseMaxDamage = maxDamage;
-
-                if ((bool)dbcPlayerClass.GetField("destructionUEboostBuff").GetValue(dbcPlayer))
+                if(name == "SSJRBuff")
                 {
-                    maxDamage += 0.1f;
-                    self.ueDamageBonusPerDamageTaken = self.baseBonusPerDamage + self.baseBonusPerDamage / 2f;
+                    var type = DBTBalance.DBCA.Code.DefinedTypes.First(x => x.Name.Equals("dbzcalamityPlayer"));
+                    dynamic instance = type.GetMethod("ModPlayer").Invoke(null, new object[] { player });
+                    var dodgeChance = type.GetField("dodgeChange");
+                    dodgeChance.SetValue(instance, (float)dodgeChance.GetValue(instance) + 20f);
                 }
-                else
-                {
-                    self.maxDamage = self.baseMaxDamage;
-
-                }
-
-                self.damageBonusPerDamageTaken = self.baseBonusPerDamage;
-
-                damageMulti = Math.Min(self.maxDamage, self.minDamage + (float)dbcPlayerClass.GetField("ueCurrentDamageBonus").GetValue(dbcPlayer));
             }
-            else
-            {
-                float dodgeChance = self.dodgeChance ?? 0f;
-                var dodgechance = dbcPlayerClass.GetField("dodgeChange");
-                dodgechance.SetValue(dbcPlayer, (float)dodgechance.GetValue(dbcPlayer) + dodgeChance);
-            }
-
-            if (IsAngelic)
-            {
-                damageMulti += 0.1f;
-                speedMulti += 0.03f;
-            }
-
-            if (modPlayer.IsKiDepleted())
-            {
-                stopAuraSound.Invoke(dbcPlayer, null);
-                player.DelBuff(buffIndex);
-                buffIndex--;
-                puiActive.SetValue(dbcPlayer, false);
-                uiActive.SetValue(dbcPlayer, false);
-            }
-            else
-            {
-                if (name == "UISignBuff")
-                    modPlayer.AddKi(self.kiDrainRate * -1f, false, true);
-
-                if (name == "UIBuff")
-                    modPlayer.AddKi(self.kiDrainRate * -1f, false, true);
-            }
-
-            player.statDefense += baseDefenceBonus;
-
-            modPlayer.AddKi(kiDrainRate * -1f, false, true);
-            Lighting.AddLight(player.Center, 1f, 1f, 0f);
-
-            player.moveSpeed *= speedMulti * modPlayer.bonusSpeedMultiplier;
-            player.maxRunSpeed *= speedMulti * modPlayer.bonusSpeedMultiplier;
-            player.runAcceleration *= speedMulti * modPlayer.bonusSpeedMultiplier;
-            if (player.jumpSpeedBoost < 1f)
-            {
-                player.jumpSpeedBoost = 1f;
-            }
-            player.jumpSpeedBoost *= speedMulti * modPlayer.bonusSpeedMultiplier;
-            player.GetDamage(DamageClass.Generic) *= damageMulti;
-
-            kiDrainMulti.SetValue(modPlayer, attackDrainMulti);
-            KiDamage.SetValue(modPlayer, modPlayer.KiDamage * damageMulti);
         }
     }
 }

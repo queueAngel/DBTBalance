@@ -48,6 +48,7 @@ namespace DBTBalance
                 var myPlayer = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
                 var baseBeamCharge = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("BaseBeamCharge"));
                 var AbstractChargeBall = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("AbstractChargeBall"));
+                var transBuff = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransBuff"));
 
                 AddHook(BaseProj.AsType(), "ModifyHitNPC", typeof(Hooks), "BaseBeam_ModifyHitNPC_Hook");
 
@@ -57,6 +58,8 @@ namespace DBTBalance
                 AddHook(baseBeamCharge.AsType(), "GetBeamDamage", typeof(Hooks), "BaseBeamCharge_GetBeamDamage_Hook");
 
                 AddHook(AbstractChargeBall.AsType(), "HandleChargingKi", typeof(Hooks), "AbstractChargeBall_HandleChargingKi_Hook");
+
+                AddHook(transBuff.AsType(), "AssembleTransBuffDescription", typeof(BuffHooks), "BuildTooltip_Hook");
 
                 foreach (var acc in AccessoryHooks.upgradePaths)
                 {
@@ -70,6 +73,7 @@ namespace DBTBalance
 
                     AddHook(type.AsType(), "SetStaticDefaults", typeof(AccessoryHooks), "SetStaticDefaults_Hook");
                 }
+
                 foreach (var adj in BuffHooks.DBT_Adjustments)
                 {
                     var type = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals(adj.Key));
@@ -77,11 +81,21 @@ namespace DBTBalance
                     AddHook(type.AsType(), "SetStaticDefaults", typeof(BuffHooks), "SetStaticDefaults_Hook");
                     AddHook(type.AsType(), "Update", new Type[] { typeof(Player), typeof(int).MakeByRefType() }, typeof(BuffHooks), "Update_Hook");
                 }
+
+                foreach (var armor in ArmorHooks.DBT_Armor)
+                {
+                    var type = DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals(armor));
+                    AddHook(type.AsType(), "SetDefaults", typeof(ArmorHooks), "Armor_SetStaticDefaults");
+                }
             }
             
             if(ModLoader.TryGetMod("dbzcalamity",out Mod dbca))
             {
                 DBCA = dbca;
+
+                var dbcaplayer = dbca.Code.DefinedTypes.First(x => x.Name.Equals("dbzcalamityPlayer"));
+
+                AddHook(dbcaplayer.AsType(), "GetDodgeCost", typeof(Hooks), "DBCA_GetDodgeCost_Hook");
 
                 foreach (var acc in AccessoryHooks.dbcaUpgradePaths)
                 {
@@ -100,7 +114,11 @@ namespace DBTBalance
                     var type = dbca.Code.DefinedTypes.First(x => x.Name.Equals(adj.Key));
 
                     AddHook(type.AsType(), "SetStaticDefaults", typeof(BuffHooks), "SetStaticDefaults_Hook");
-                    AddHook(type.AsType(), "Update", new Type[] { typeof(Player), typeof(int).MakeByRefType() }, typeof(BuffHooks), "DBCA_Update_Hook");
+                }
+                foreach (var armor in ArmorHooks.DBCA_Armor)
+                {
+                    var type = dbca.Code.DefinedTypes.First(x => x.Name.Equals(armor));
+                    AddHook(type.AsType(), "SetDefaults", typeof(ArmorHooks), "Armor_SetStaticDefaults");
                 }
             }
 

@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace DBTBalance.Helpers
 {
-    public class AccessoryHooks
+    internal sealed class AccessoryHooks
     {
         public static Dictionary<string, string[]> upgradePaths = new Dictionary<string, string[]>()
         {
