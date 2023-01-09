@@ -27,7 +27,7 @@ namespace DBTBalance.Buffs
             {
                 damageMulti = 1.85f;
                 speedMulti = 0.9f;
-                baseDefenceBonus = 78;
+                baseDefenceBonus = 61;
             }
             else
             {

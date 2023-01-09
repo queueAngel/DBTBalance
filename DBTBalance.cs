@@ -54,6 +54,10 @@ namespace DBTBalance
 
                 AddHook(myPlayer.AsType(), "ResetEffects", typeof(Hooks), "MyPlayer_ResetEffects_Hook");
 
+                AddHook(myPlayer.AsType(), "PowerWishMulti", typeof(Hooks), "MyPlayer_PowerWishMulti_Hook");
+
+                AddHook(myPlayer.AsType(), "HandlePowerWishMultipliers", typeof(Hooks), "MyPlayer_HandlePowerWishMultipliers_Hook");
+
                 AddHook(baseBeamCharge.AsType(), "GetBeamPowerMultiplier", typeof(Hooks), "BaseBeamCharge_GetBeamPowerMultiplier_Hook");
                 AddHook(baseBeamCharge.AsType(), "GetBeamDamage", typeof(Hooks), "BaseBeamCharge_GetBeamDamage_Hook");
 

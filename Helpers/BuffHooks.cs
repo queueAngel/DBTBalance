@@ -15,26 +15,26 @@ namespace DBTBalance.Helpers
     {
         public static Dictionary<string, (float Damage, float Speed, int defense, float drainRate, float masterDrainRate)> DBT_Adjustments = new()
         {
-            { "SSJ1Buff", (1.20f, 1.10f, 9, 0f, 0f) },
-            { "ASSJBuff", (1.25f, 1.10f, 14, 0f, 0f) },
-            { "USSJBuff", (1.3f, 0.9f, 19, 0f, 0f) },
-            { "SuperKaiokenBuff", (1.3f, 1.10f, 12, 0f, 0f) },
-            { "SSJ2Buff", (1.3f, 1.10f, 15, 0f, 0f) },
-            { "SSJ3Buff", (1.4f, 1.10f, 21, 0f, 0f) },
-            { "SSJGBuff", (1.5f, 1.10f, 30, 0f, 0f) },
+            { "SSJ1Buff", (1.20f, 1.10f, 4, 0f, 0f) },
+            { "ASSJBuff", (1.25f, 1.10f, 5, 0f, 0f) },
+            { "USSJBuff", (1.3f, 0.9f, 17, 0f, 0f) },
+            { "SuperKaiokenBuff", (1.3f, 1.10f, 6, 0f, 0f) },
+            { "SSJ2Buff", (1.3f, 1.10f, 11, 0f, 0f) },
+            { "SSJ3Buff", (1.4f, 1.10f, 15, 0f, 0f) },
+            { "SSJGBuff", (1.55f, 1.15f, 23, 0f, 0f) },
             
-            { "SSJBBuff", (1.75f, 1.30f, 42, 0f, 0f) },
-            { "SSJRBuff", (1.95f, 1.10f, 30, 0f, 0f) }, // 1.80 dmg if DBCA enabled
+            { "SSJBBuff", (1.70f, 1.30f, 30, 0f, 0f) },
+            { "SSJRBuff", (1.95f, 1.10f, 23, 0f, 0f) }, // 1.80 dmg if DBCA enabled
 
-            { "LSSJBuff", (1.35f, 0.9f, 26, 0f, 0f) },
-            { "LSSJ2Buff", (1.45f, 0.9f, 43, 0f, 0f) },
-            { "LSSJ3Buff", (1.55f, 0.9f, 63, 0f, 0f) },
+            { "LSSJBuff", (1.35f, 0.9f, 21, 0f, 0f) },
+            { "LSSJ2Buff", (1.45f, 0.9f, 30, 0f, 0f) },
+            { "LSSJ3Buff", (1.60f, 0.9f, 46, 0f, 0f) },
         };
 
         public static Dictionary<string, (float Damage, float Speed, int defense, float minDamage, float maxDamage, float drainRate, float masterDrainRate)> DBCA_Adjustments = new()
         {
             { "PUIBuff", (1.7f, 1.10f, 35, 0f, 0f, 0f, 0f) },
-            { "UEBuff", (2f, 1.15f, 10, 2f, 2.5f, 0f, 0f) }
+            { "UEBuff", (2f, 1.15f, 10, 1.85f, 2.5f, 0f, 0f) }
         };
 
         public static string BuildTooltip_Hook(dynamic self)
@@ -75,11 +75,11 @@ namespace DBTBalance.Helpers
             if (dmg != 0)
                 sb.Append($"Damage {(dmg>0?"+":"")}{dmg:P2}");
             if (speed != 0)
-                sb.AppendLine($" | Speed {(dmg > 0 ? "+" : "")}{speed:P2}");
+                sb.AppendLine($"; Speed {(dmg > 0 ? "+" : "")}{speed:P2}");
             if (defense != 0)
                 sb.Append($"Defense {(dmg > 0 ? "+" : "")}{defense}");
             if (UsageRate != 0)
-                sb.AppendLine($" | Ki Costs {(UsageRate > 0 ? "+" : "")}{UsageRate:P2}");
+                sb.AppendLine($"; Ki Costs {(UsageRate > 0 ? "+" : "")}{UsageRate:P2}");
             if (DrainRate != 0)
                 sb.AppendLine($"Ki Drain {MathF.Round(DrainRate):N0}/s, {MathF.Round(DrainRateMastered):N0}/s when mastered");
             if ((int)self.healthDrainRate != 0)

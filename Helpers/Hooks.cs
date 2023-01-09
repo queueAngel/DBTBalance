@@ -86,5 +86,18 @@ namespace DBTBalance.Helpers
             else
                 return (int)Math.Ceiling(self.Projectile.damage * BaseBeamCharge_GetBeamPowerMultiplier_Hook(self));
         }
+
+        public static float MyPlayer_PowerWishMulti_Hook(dynamic self)
+        {
+            return (float)(0.05 * (int)self.GetPowerWishesUsed());
+        }
+        public static void MyPlayer_HandlePowerWishMultipliers_Hook(dynamic self)
+        {
+            float multi = MyPlayer_PowerWishMulti_Hook(self);
+            Player player = (Player)self.Player;
+
+            player.GetDamage(DamageClass.Generic) *= multi;
+            self.KiDamage *= multi;
+        }
     }
 }
