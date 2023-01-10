@@ -89,7 +89,7 @@ namespace DBTBalance.Helpers
 
         public static float MyPlayer_PowerWishMulti_Hook(dynamic self)
         {
-            return (float)(0.05 * (int)self.GetPowerWishesUsed());
+            return (float)(1f + (0.05 * (int)self.GetPowerWishesUsed()));
         }
         public static void MyPlayer_HandlePowerWishMultipliers_Hook(dynamic self)
         {
