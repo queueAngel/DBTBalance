@@ -112,8 +112,12 @@ namespace DBTBalance
             if(LSSJ4Achieved && !LSSJ4UnlockMsg)
             {
                 LSSJ4UnlockMsg = true;
-                if(Main.netMode != NetmodeID.Server)
-                    Main.NewText("You have unlocked your true potential.\nWhile in Legendary Super Saiyain 3 form press the Transform button once more to reach higher power.", Color.Green);
+                if (Main.netMode != NetmodeID.Server)
+                {
+                    Main.NewText("You have unlocked your true potential. Legendary Super Saiyan 4 has been achieved!", Color.Green);
+                    TransformationHandler.ClearTransformations(Player);
+                    TransformationHandler.Transform(Player, TransformationHandler.GetTransformation("LSSJ4Buff").Value);
+                }
             }
 
             if (ModLoader.HasMod("DBZMODPORT"))

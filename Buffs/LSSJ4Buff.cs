@@ -87,10 +87,7 @@ namespace DBTBalance.Buffs
         }
         public bool DiscoverCondition(Player player)
         {
-            var MyPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
-            dynamic ModPlayer = MyPlayer.GetMethod("ModPlayer").Invoke(null, new object[] { player });
-
-            return (bool)ModPlayer.lssj3Achieved && player.GetModPlayer<GPlayer>().Trait == "Legendary";
+            return player.GetModPlayer<GPlayer>().Trait == "Legendary";
         }
         public override bool Condition(Player player) => true;
     }

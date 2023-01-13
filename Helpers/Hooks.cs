@@ -42,7 +42,7 @@ namespace DBTBalance.Helpers
             float value = orig(self);
 
             if (TransformationHandler.IsTransformed((Player)self.Player))
-                if (TransformationHandler.GetCurrentTransformation((Player)self.Player).Value.buffKeyName == "SSJRBuff")
+                if (TransformationHandler.GetCurrentTransformation((Player)self.Player)?.buffKeyName == "SSJRBuff")
                 {
                     var type = DBTBalance.DBCA.Code.DefinedTypes.First(x => x.Name.Equals("dbzcalamityPlayer"));
                     var isAngelic = type.GetField("IsAngelic");

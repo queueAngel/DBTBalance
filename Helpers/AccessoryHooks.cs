@@ -157,21 +157,21 @@ namespace DBTBalance.Helpers
                 if (HasAccessory(player, upgradePaths[itemName]))
                     return;
 
-            if(orig != null && player != null && self != null)
-                orig(self, player, hideVisual);
+            dynamic modPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { player });
+
+            if (modPlayer == null || player == null || self == null)
+                return;
+
+            orig(self, player, hideVisual);
 
             if(DamageAdjustment.TryGetValue(itemName, out var amount))
             {
-                dynamic modPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { player });
-
                 modPlayer.KiDamage -= amount;
             }
             if (ModLoader.HasMod("dbzcalamity"))
             {
                 if(dbcaDamageAdjustment.TryGetValue(itemName, out var amount2))
                 {
-                    dynamic modPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { player });
-
                     modPlayer.KiDamage -= amount2;
                 }
             }

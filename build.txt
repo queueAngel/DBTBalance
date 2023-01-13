@@ -1,6 +1,6 @@
 displayName = Dragon Ball Terraria: Rebalanced
 author = Vyklade
-version = 1.4.1
+version = 1.4.3
 modReferences = DBZMODPORT, DBZGoatLib
 sortAfter = DBZMODPORT, dbzcalamity
 includeSource = true
