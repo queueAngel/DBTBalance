@@ -34,53 +34,6 @@ namespace DBTBalanceRevived
                     }
                 }
             }
-
-            // Replaced with better code above - qAngel
-
-            /*
-            if (ModLoader.HasMod("DBZMODPORT"))
-            {
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                {
-                    BPlayer Player = Main.CurrentPlayer.GetModPlayer<BPlayer>();
-                    MyPlayer modPlayer = Main.CurrentPlayer.GetModPlayer<MyPlayer>();
-
-                    float mastery = modPlayer.masteryLevelLeg3;
-
-                    if (!Player.LSSJ4Achieved && mastery >= 1f)
-                    {
-                        if (npc.type == NPCID.MoonLordCore)
-                        {
-                            Player.LSSJ4Achieved = true;
-                        }
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < Main.maxPlayers; i++)
-                    {
-                        Player player = Main.player[i];
-                        if (player != null)
-                        {
-                            if (player.active)
-                            {
-                                BPlayer modPlayer = player.GetModPlayer<BPlayer>();
-
-                                if (!modPlayer.LSSJ4Achieved)
-                                {
-                                    if (npc.type == NPCID.MoonLordCore)
-                                    {
-                                        modPlayer.MP_Unlock = true;
-                                        modPlayer.LSSJ4Achieved = true;
-                                        BNetworkHandler.SendUnlockStatus(i, true);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            */
         }
     }
 }
