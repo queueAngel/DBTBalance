@@ -206,7 +206,7 @@ namespace DBTBalanceRevived.Helpers
             if (!BalanceConfigServer.Instance.SSJTweaks)
                 return;
 
-            if(Adjustments.TryGetValue(self.Type, out DBTBuffInfo adjustments))
+            if(Adjustments.TryGetValue(self.GetType(), out DBTBuffInfo adjustments))
             {
                 float dmg = (float)(1.0 + ((adjustments.Damage) - 1.0) * 0.5);
 

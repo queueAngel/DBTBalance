@@ -142,12 +142,6 @@ namespace DBTBalanceRevived
             if (upgradePathBuffer != null)
             {
                 for (int i = 0; i < upgradePathBuffer.Length; i++)
-                {
-                    if (upgradePathBuffer[i] == ItemID.None)
-                        continue;
-                    Main.NewText(ItemLoader.GetItem(upgradePathBuffer[i]).Name);
-                }
-                for (int i = 0; i < upgradePathBuffer.Length; i++)
                     upgradePathBuffer[i] = 0;
             }
             if (BalanceConfigServer.Instance.KiRework)

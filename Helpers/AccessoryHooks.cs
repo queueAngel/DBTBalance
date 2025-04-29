@@ -25,7 +25,7 @@ namespace DBTBalanceRevived.Helpers
         { 
             get
             {
-                return
+                Type[] types =
                 [
                     typeof(ArmCannon),
                     typeof(WornGloves),
@@ -52,6 +52,9 @@ namespace DBTBalanceRevived.Helpers
                     typeof(SapphireNecklace),
                     typeof(TopazNecklace),
                 ];
+                if (ModLoader.HasMod("dbzcalamity"))
+                    return [.. types, .. UpgradeTypesCalamity];
+                return types;
             } 
         }
         [JITWhenModsEnabled("dbzcalamity")]
