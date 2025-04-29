@@ -1,59 +1,77 @@
 Mods: {
-	DBTBalance: {
+	DBTBalanceRevived: {
 		Buffs: {
 			LSSJ4Buff: {
-				DisplayName: L S S J4 Buff
-				Description: Mods.DBTBalance.Buffs.LSSJ4Buff.Description
+				DisplayName: LSSJ4 Buff
+				Description:
+					'''
+					Ki Damage +380% 
+					Speed +250%
+					Ki Costs +108%
+					Ki Drain: 270/s, 90/s when mastered
+					'''
 			}
 		}
 
 		Items: {
 			LSSJ4Test: {
-				DisplayName: L S S J4 Test
-				Tooltip: ""
+				DisplayName: LSSJ4 Test
+				Tooltip:
+					'''
+					DEBUG ITEM
+					Unlocks Legendary Super Saiyan 4
+					'''
 			}
 		}
 
 		Configs: {
 			BalanceConfig: {
-				DisplayName: Balance Config
-				Headers.LSSJ4Settings: L S S J4 Settings Header
+				DisplayName: Client Settings
+				Headers.LSSJ4Settings: Legendary Super Saiyan 4 Settings
 
 				UseHair: {
-					Label: Use Hair
-					Tooltip: ""
+					Label: Replace Hair/Arm with hair:
+					Tooltip: "(Janky) Replace the player's chest piece with red-ish hair."
 				}
 			}
 
 			BalanceConfigServer: {
-				DisplayName: Balance Config Server
-				Headers.ToggleableBalanceAdjustments: Toggleable Balance Adjustments Header
+				DisplayName: Server Settings
+				Headers.ToggleableBalanceAdjustments: Toggleable Balance Adjustments
 
 				ArmorCrunch: {
-					Label: Armor Crunch
-					Tooltip: ""
+					Label: Armor Defense Cut
+					Tooltip: "Halves the defense bonus of Ki-Class armor to accomodate for Saiyan form defense bonuses."
 				}
 
 				ChargeRework: {
-					Label: Charge Rework
-					Tooltip: ""
+					Label: Beam Weapon Rework
+					Tooltip:
+						'''
+						Changes beam ki weapons to always take 3 seconds to charge.
+						More Charges still mean more damage.
+						'''
 				}
 
 				KiRework: {
 					Label: Ki Rework
-					Tooltip: ""
+					Tooltip: "Removes all passive Ki Regen and turns it into Ki Charge Rate."
 				}
 
 				LongerTransform: {
-					Label: Longer Transform
-					Tooltip: ""
+					Label: Longer Transformation Times
+					Tooltip: "Makes transforming into SSJ forms require holding the button for a small duration."
 				}
 
 				SSJTweaks: {
-					Label: S S J Tweaks
-					Tooltip: ""
+					Label: Super Saiyan Transformation Tweaks
+					Tooltip: "Rebalances the bonuses granted by transformations to reduce power creep. Reload required."
 				}
 			}
+		}
+
+		Misc: {
+			LSSJ4Unlocked: You have unlocked your true potential. Legendary Super Saiyan 4 has been achieved!
 		}
 	}
 }

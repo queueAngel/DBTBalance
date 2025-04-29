@@ -1,11 +1,11 @@
-﻿using DBTBalance.Model;
+﻿using DBTBalanceRevived.Model;
 using Microsoft.Xna.Framework;
 using Terraria;
 using DBZGoatLib.Model;
 using DBZGoatLib;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DBTBalance.Buffs
+namespace DBTBalanceRevived.Buffs
 {
     public class LSSJ4Buff : Transformation
     {
@@ -48,10 +48,10 @@ namespace DBTBalance.Buffs
         public override Color TextColor() => Color.HotPink;
 
         public override SoundData SoundData() => new SoundData("DBZMODPORT/Sounds/SSJAscension", "DBZMODPORT/Sounds/SSJ3", 260);
-        public override AuraData AuraData() => new AuraData("DBTBalance/Assets/LSSJ4Aura", 4, BlendState.AlphaBlend, new Color(250, 74, 67));
+        public override AuraData AuraData() => new AuraData("DBTBalanceRevived/Assets/LSSJ4Aura", 4, BlendState.AlphaBlend, new Color(250, 74, 67));
         public override Gradient KiBarGradient() => new Gradient(new Color(255, 56, 99)).AddStop(1f, new Color(156, 0, 34));
 
-        public override string HairTexturePath() => "DBTBalance/Assets/LSSJ4Hair";
+        public override string HairTexturePath() => "DBTBalanceRevived/Assets/LSSJ4Hair";
 
         public override bool SaiyanSparks() => true;
 
@@ -70,7 +70,7 @@ namespace DBTBalance.Buffs
 
         public override Node[] Nodes() => new Node[]
         {
-            new Node(4,3,"LSSJ4Buff","DBTBalance/Buffs/LSSJ4Buff","Only defeating a foe of cosmic proportions can unlock this power.",UnlockCondition,DiscoverCondition)
+            new Node(4,3,"LSSJ4Buff","DBTBalanceRevived/Buffs/LSSJ4Buff","Only defeating a foe of cosmic proportions can unlock this power.",UnlockCondition,DiscoverCondition)
         };
 
         public bool UnlockCondition(Player player)

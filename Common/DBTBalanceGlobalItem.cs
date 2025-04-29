@@ -1,10 +1,10 @@
-﻿using DBTBalance.Helpers;
+﻿using DBTBalanceRevived.Helpers;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace DBTBalance.Common
+namespace DBTBalanceRevived.Common
 {
-    public sealed class DBTBalanceGlobalItem : GlobalItem
+    public sealed class DBTBalanceRevivedGlobalItem : GlobalItem
     {
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)
         {

@@ -1,6 +1,6 @@
-displayName = Dragon Ball Terraria: Rebalanced
-author = Vyklade
-version = 1.4.3
+displayName = Dragon Ball Terraria: Rebalanced: Revived
+author = Vyklade (Revived by qAngel)
+version = 1.0.0
 weakReferences = dbzcalamity
 modReferences = DBZMODPORT, DBZGoatLib
 sortAfter = DBZMODPORT, dbzcalamity

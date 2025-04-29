@@ -1,4 +1,7 @@
-[h1] Dragon Ball Terraria: Rebalanced[/h1]
+[h1] Dragon Ball Terraria: Rebalanced: Revived[/h1]
+
+Dragon Ball Terraria: Rebalanced, ported for the latest version of tModLoader. Original description below.
+
 This small mod has one simple goal. Take the excellent foundation laid out by the Dragon Ball Terraria v1.0.9.9 mod and fix some of its issues in regard to balancing. Including things such as nerfing Super Saiyan forms, fixing balance concerns in regards to accessories and even introducing an entire new form to make the Legendary trait not fall off after Moon Lord.
 
 [h3][url=https://discord.gg/terrariaballsuper]Join the Discord Community![/url][/h3]

@@ -1,12 +1,17 @@
-﻿using Terraria.ModLoader;
+﻿using DBTBalanceRevived.Helpers;
+using DBZMODPORT.Buffs;
+using Terraria.ModLoader;
 
-namespace DBTBalance.Common
+namespace DBTBalanceRevived.Common
 {
-    public class DBTBalanceGlobalBuff : GlobalBuff
+    public class DBTBalanceRevivedGlobalBuff : GlobalBuff
     {
         public override void ModifyBuffText(int type, ref string buffName, ref string tip, ref int rare)
         {
-            base.ModifyBuffText(type, ref buffName, ref tip, ref rare);
+            if (BuffLoader.GetBuff(type) is TransBuff self)
+            {
+                tip = BuffHooks.BuildTooltip_Hook(self);
+            }
         }
     }
 }

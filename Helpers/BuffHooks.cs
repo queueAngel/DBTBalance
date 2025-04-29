@@ -1,17 +1,17 @@
-﻿using DBTBalance.Model;
+﻿using DBTBalanceRevived.Model;
 using dbzcalamity;
 using dbzcalamity.Buffs.SSJForms;
+using DBZMODPORT.Buffs;
 using DBZMODPORT.Buffs.SSJBuffs;
 using DBZMODPORT.Models;
 using DBZMODPORT.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace DBTBalance.Helpers
+namespace DBTBalanceRevived.Helpers
 {
     public readonly struct DBTBuffInfo
     {
@@ -112,10 +112,8 @@ namespace DBTBalance.Helpers
             { "UEBuff", (2f, 1.15f, 10, 1.85f, 2.5f, 0f, 0f) }
         };
         */
-        public static string BuildTooltip_Hook(dynamic self)
+        public static string BuildTooltip_Hook(TransBuff self)
         {
-            var tHelper = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransformationHelper"));
-
             BuffInfo kaioken = TransformationHelper.Kaioken;
             BuffInfo superKaioken = TransformationHelper.SuperKaioken;
 
@@ -196,14 +194,6 @@ namespace DBTBalance.Helpers
                     self.MinDamage = adjustments.MinDamage;
                 if (adjustments.MaxDamage != 0)
                     self.MaxDamage = adjustments.MaxDamage;
-
-                // Replaced with DBTBalanceGlobalBuff - qAngel
-
-                /*
-                string tip = self.AssembleTransBuffTranscription();
-
-                self.Description.SetDefault(tip);
-                */
             }
         }
 

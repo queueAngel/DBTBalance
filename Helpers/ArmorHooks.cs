@@ -5,7 +5,7 @@ using DBZMODPORT.Items.Armor.ArmorSets;
 using System;
 using Terraria.ModLoader;
 
-namespace DBTBalance.Helpers
+namespace DBTBalanceRevived.Helpers
 {
     internal sealed class ArmorHooks
     {

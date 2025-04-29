@@ -3,19 +3,20 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using DBTBalance.Buffs;
+using DBTBalanceRevived.Buffs;
 using Terraria.GameInput;
 using Microsoft.Xna.Framework;
 using DBZGoatLib.Handlers;
 using DBZGoatLib;
-using DBTBalance.Model;
+using DBTBalanceRevived.Model;
 using DBZGoatLib.Model;
 using DBZMODPORT;
 using dbzcalamity;
 using DBZMODPORT.Util;
 using System.Runtime.CompilerServices;
+using Terraria.Localization;
 
-namespace DBTBalance
+namespace DBTBalanceRevived
 {
     public class BPlayer : ModPlayer
     {
@@ -37,14 +38,14 @@ namespace DBTBalance
         public override void SaveData(TagCompound tag)
         {
             if (LSSJ4Achieved)
-                tag.Add("DBTBalance_LSSJ4Achieved", LSSJ4Achieved);
+                tag.Add("DBTBalanceRevived_LSSJ4Achieved", LSSJ4Achieved);
             if (LSSJ4UnlockMsg)
-                tag.Add("DBTBalance_LSSJ4UnlockMsg", LSSJ4UnlockMsg);
+                tag.Add("DBTBalanceRevived_LSSJ4UnlockMsg", LSSJ4UnlockMsg);
         }
         public override void LoadData(TagCompound tag)
         {
-            LSSJ4Achieved = tag.ContainsKey("DBTBalance_LSSJ4Achieved");
-            LSSJ4UnlockMsg = tag.ContainsKey("DBTBalance_LSSJ4UnlockMsg");
+            LSSJ4Achieved = tag.ContainsKey("DBTBalanceRevived_LSSJ4Achieved");
+            LSSJ4UnlockMsg = tag.ContainsKey("DBTBalanceRevived_LSSJ4UnlockMsg");
         }
         
         public static BPlayer ModPlayer(Player player) => player.GetModPlayer<BPlayer>();
@@ -122,7 +123,7 @@ namespace DBTBalance
                 LSSJ4UnlockMsg = true;
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    Main.NewText("You have unlocked your true potential. Legendary Super Saiyan 4 has been achieved!", Color.Green);
+                    Main.NewText(Language.GetText("Mods.DBTBalanceRevived.Misc.LSSJ4Unlocked"), Color.Green);
                     TransformationHandler.ClearTransformations(Player);
                     TransformationHandler.Transform(Player, TransformationHandler.GetTransformation("LSSJ4Buff").Value);
                 }

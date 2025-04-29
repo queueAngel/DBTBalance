@@ -3,14 +3,14 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace DBTBalance.Helpers
+namespace DBTBalanceRevived.Helpers
 {
     internal static class BNetworkHandler
     {
         public const byte SYNC_UNLOCK_STATUS = 1;
         public static void SendUnlockStatus(int who, bool value)
         {
-            ModPacket packet = DBTBalance.Instance.GetPacket();
+            ModPacket packet = DBTBalanceRevived.Instance.GetPacket();
 
             packet.Write(SYNC_UNLOCK_STATUS);
             packet.Write((byte)who);

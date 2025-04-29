@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace DBTBalance.Model
+namespace DBTBalanceRevived.Model
 {
     public class RippedLayer : PlayerDrawLayer
     {

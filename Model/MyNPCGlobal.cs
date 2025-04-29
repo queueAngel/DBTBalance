@@ -1,10 +1,10 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
-using DBTBalance.Helpers;
+using DBTBalanceRevived.Helpers;
 using DBZMODPORT;
 
-namespace DBTBalance
+namespace DBTBalanceRevived
 {
     public class MyNPCGlobal : GlobalNPC
     {

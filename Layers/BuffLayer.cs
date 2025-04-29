@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace DBTBalance.Model
+namespace DBTBalanceRevived.Model
 {
     public class BuffLayer : PlayerDrawLayer
     {
@@ -24,7 +24,7 @@ namespace DBTBalance.Model
 
                 var xBody = (int)(drawInfo.Position.X - Main.screenPosition.X - (drawInfo.drawPlayer.bodyFrame.Width / 2) + (drawInfo.drawPlayer.width / 2));
                 var yBody = (int)(drawInfo.Position.Y - Main.screenPosition.Y + drawInfo.drawPlayer.height - drawInfo.drawPlayer.bodyFrame.Height + 4f);
-                DrawData dataBody = new DrawData(ModContent.Request<Texture2D>("DBTBalance/Assets/LSSJ4Body", AssetRequestMode.AsyncLoad).Value,
+                DrawData dataBody = new DrawData(ModContent.Request<Texture2D>("DBTBalanceRevived/Assets/LSSJ4Body", AssetRequestMode.AsyncLoad).Value,
                     new Vector2(xBody, yBody) + drawInfo.drawPlayer.bodyPosition, 
                     drawInfo.drawPlayer.bodyFrame,
                     alphaBody, 
@@ -37,7 +37,7 @@ namespace DBTBalance.Model
 
                 var xArms = (int)(drawInfo.Position.X - Main.screenPosition.X - (drawInfo.drawPlayer.bodyFrame.Width / 2) + (drawInfo.drawPlayer.width / 2));
                 var yArms = (int)(drawInfo.Position.Y - Main.screenPosition.Y + drawInfo.drawPlayer.height - drawInfo.drawPlayer.bodyFrame.Height + 4f);
-                DrawData dataArms = new DrawData(ModContent.Request<Texture2D>("DBTBalance/Assets/LSSJ4Arms", AssetRequestMode.AsyncLoad).Value,
+                DrawData dataArms = new DrawData(ModContent.Request<Texture2D>("DBTBalanceRevived/Assets/LSSJ4Arms", AssetRequestMode.AsyncLoad).Value,
                     new Vector2(xArms,yArms) + drawInfo.drawPlayer.bodyPosition, 
                     drawInfo.drawPlayer.bodyFrame, 
                     alphaArms, 

@@ -4,7 +4,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace DBTBalance.Items
+namespace DBTBalanceRevived.Items
 {
     public class LSSJ4Test : ModItem
     {

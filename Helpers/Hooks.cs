@@ -2,13 +2,13 @@
 using Terraria;
 using Terraria.ModLoader;
 using DBZGoatLib.Handlers;
-using DBTBalance.Model;
+using DBTBalanceRevived.Model;
 using DBZMODPORT.Projectiles;
 using DBZMODPORT;
-using static DBTBalance.Helpers.Hooks;
+using static DBTBalanceRevived.Helpers.Hooks;
 using dbzcalamity;
 
-namespace DBTBalance.Helpers
+namespace DBTBalanceRevived.Helpers
 {
     internal static class Hooks
     {
