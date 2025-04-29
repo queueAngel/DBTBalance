@@ -1,24 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using DBTBalance.Buffs;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameInput;
 using Microsoft.Xna.Framework;
-using ReLogic.Content;
-using DBTBalance.Helpers;
 using DBZGoatLib.Handlers;
 using DBZGoatLib;
-using static Terraria.ModLoader.PlayerDrawLayer;
 using DBTBalance.Model;
 using DBZGoatLib.Model;
+using DBZMODPORT;
+using dbzcalamity;
+using DBZMODPORT.Util;
+using System.Runtime.CompilerServices;
 
 namespace DBTBalance
 {
@@ -35,63 +30,76 @@ namespace DBTBalance
         public DateTime? LastPowerUpTick = null;
 
         private TransformationInfo? Form = null;
-
+        /// <summary>
+        /// i will die before using a list as a buffer
+        /// </summary>
+        public ushort[] upgradePathBuffer;
         public override void SaveData(TagCompound tag)
         {
-            tag.Add("DBTBalance_LSSJ4Achieved", LSSJ4Achieved);
-            tag.Add("DBTBalance_LSSJ4UnlockMsg", LSSJ4UnlockMsg);
+            if (LSSJ4Achieved)
+                tag.Add("DBTBalance_LSSJ4Achieved", LSSJ4Achieved);
+            if (LSSJ4UnlockMsg)
+                tag.Add("DBTBalance_LSSJ4UnlockMsg", LSSJ4UnlockMsg);
         }
         public override void LoadData(TagCompound tag)
         {
-            if (tag.ContainsKey("DBTBalance_LSSJ4Achieved"))
-                LSSJ4Achieved = tag.GetBool("DBTBalance_LSSJ4Achieved");
-            if (tag.ContainsKey("DBTBalance_LSSJ4UnlockMsg"))
-                LSSJ4UnlockMsg = tag.GetBool("DBTBalance_LSSJ4UnlockMsg");
+            LSSJ4Achieved = tag.ContainsKey("DBTBalance_LSSJ4Achieved");
+            LSSJ4UnlockMsg = tag.ContainsKey("DBTBalance_LSSJ4UnlockMsg");
         }
         
         public static BPlayer ModPlayer(Player player) => player.GetModPlayer<BPlayer>();
-       
         public static bool MasteredLLSJ4(Player player) => GPlayer.ModPlayer(player).GetMastery(ModContent.BuffType<LSSJ4Buff>()) >= 1f;
-        
-        public override void PostUpdateEquips()
+        public void AddToUpgradesBuffer(int type)
         {
-            base.PostUpdateEquips();
-            if(ModLoader.TryGetMod("dbzcalamity", out Mod dbcamod))
+            upgradePathBuffer ??= new ushort[8]; // let's say 8
+
+            // check if the player already has the accessory. also for a free slot. this is safe because accessories will always be added to the buffer in order
+            for (int i = 0; i < upgradePathBuffer.Length; i++)
             {
-                var ModPlayerClass = dbcamod.Code.DefinedTypes.First(x => x.Name.Equals("dbzcalamityPlayer"));
-                var getModPlayer = ModPlayerClass.GetMethod("ModPlayer");
-
-                dynamic dbzPlayer = getModPlayer.Invoke(null, new object[] {Player});
-
-                var dodgeChance = ModPlayerClass.GetField("dodgeChange");
-                dodgeChance.SetValue(dbzPlayer, (float)dodgeChance.GetValue(dbzPlayer) - .05f);
+                ref ushort slot = ref upgradePathBuffer[i];
+                if (slot == type)
+                {
+                    return; // exit method if they do
+                }
+                else if (slot == ItemID.None)
+                {
+                    slot = (ushort)type; // store accessory if empty slot is found
+                    return;
+                }
             }
 
+            // if we're still in the method, that means the array didn't have enough slots, so resize and add it to the new slot
+            Array.Resize(ref upgradePathBuffer, upgradePathBuffer.Length + 1);
+            upgradePathBuffer[^1] = (ushort)type;
         }
-
+        public override void PostUpdateEquips()
+        {
+            if (ModLoader.HasMod("dbzcalamity"))
+                PostUpdateEquipsCalamity();
+        }
+        [JITWhenModsEnabled("dbzcalamity")]
+        internal void PostUpdateEquipsCalamity()
+        {
+            dbzcalamityPlayer modPlayer = Player.GetModPlayer<dbzcalamityPlayer>();
+            modPlayer.dodgeChange -= 0.05f;
+        }
+        [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "kiRegenTimer")]
+        public static extern ref int GetKiRegenTimer(MyPlayer instance);
         public override void PreUpdate()
         {
-            if (ModLoader.HasMod("DBZMODPORT"))
+            bool isLSSJ3 = TransformationHelper.IsLSSJ3(Player);
+
+            if (!isLSSJ3)
+                Offset = null;
+            else if (!Offset.HasValue)
+                Offset = DateTime.Now;
+
+            if (BalanceConfigServer.Instance.KiRework)
             {
-                var transformationHelper = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransformationHelper"));
-                bool IsLSSJ3 = (bool)transformationHelper.GetMethod("IsLSSJ3").Invoke(null, new object[] { Player });
-
-                if (!IsLSSJ3)
-                    Offset = null;
-
-                if (IsLSSJ3 && !Offset.HasValue)
-                    Offset = DateTime.Now;
-
-                if (BalanceConfigServer.Instance.KiRework)
-                {
-                    var MyPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
-                    dynamic myPlayer = MyPlayerClass.GetMethod("ModPlayer").Invoke(null, new object[] { Player });
-                    var kiRegenTimer = MyPlayerClass.GetField("kiRegenTimer", DBTBalance.flagsAll);
-                    var kiChargeRate = MyPlayerClass.GetField("kiChargeRate");
-
-                    kiRegenTimer.SetValue(myPlayer, 0);
-                    kiChargeRate.SetValue(myPlayer, myPlayer.kiChargeRate + myPlayer.kiRegen);
-                }
+                MyPlayer modPlayer = Player.GetModPlayer<MyPlayer>();
+                ref int kiRegenTimer = ref GetKiRegenTimer(modPlayer);
+                kiRegenTimer = 0;
+                modPlayer.kiChargeRate += modPlayer.kiRegen;
             }
         }
 
@@ -99,9 +107,9 @@ namespace DBTBalance
         {
             if (MP_Unlock && Main.netMode == NetmodeID.MultiplayerClient)
             {
-                dynamic modPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { Player });
+                MyPlayer modPlayer = Player.GetModPlayer<MyPlayer>();
 
-                float mastery = (float)modPlayer.masteryLevelLeg3;
+                float mastery = modPlayer.masteryLevelLeg3;
 
                 if (mastery >= 1f)
                 {
@@ -120,30 +128,31 @@ namespace DBTBalance
                 }
             }
 
-            if (ModLoader.HasMod("DBZMODPORT"))
+            if (BalanceConfigServer.Instance.KiRework)
             {
-                if (BalanceConfigServer.Instance.KiRework)
+                if (Player.TryGetModPlayer(out MyPlayer modPlayer))
                 {
-                    var MyPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
-                    dynamic myPlayer = MyPlayerClass.GetMethod("ModPlayer").Invoke(null, new object[] { Player });
-                    var kiChargeRate = MyPlayerClass.GetField("kiChargeRate");
-
-                    kiChargeRate.SetValue(myPlayer, myPlayer.kiChargeRate + myPlayer.kiRegen);
+                    modPlayer.kiChargeRate += modPlayer.kiRegen;
                 }
             }
         }
         public override void ResetEffects()
         {
-            if (ModLoader.HasMod("DBZMODPORT"))
+            if (upgradePathBuffer != null)
             {
-                if (BalanceConfigServer.Instance.KiRework)
+                for (int i = 0; i < upgradePathBuffer.Length; i++)
                 {
-                    var MyPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
-                    dynamic myPlayer = MyPlayerClass.GetMethod("ModPlayer").Invoke(null, new object[] { Player });
-                    var kiChargeRate = MyPlayerClass.GetField("kiChargeRate");
-
-                    kiChargeRate.SetValue(myPlayer, myPlayer.kiChargeRate + myPlayer.kiRegen);
+                    if (upgradePathBuffer[i] == ItemID.None)
+                        continue;
+                    Main.NewText(ItemLoader.GetItem(upgradePathBuffer[i]).Name);
                 }
+                for (int i = 0; i < upgradePathBuffer.Length; i++)
+                    upgradePathBuffer[i] = 0;
+            }
+            if (BalanceConfigServer.Instance.KiRework)
+            {
+                MyPlayer modPlayer = Player.GetModPlayer<MyPlayer>();
+                modPlayer.kiChargeRate += modPlayer.kiRegen;
             }
         }
         public override void ProcessTriggers(TriggersSet triggersSet)
@@ -170,7 +179,7 @@ namespace DBTBalance
 
         public void HandleTransformationInput()
         {
-            dynamic self = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { Player });
+            MyPlayer self = Player.GetModPlayer<MyPlayer>();
             if (TransformationHandler.TransformKey.Current && !TransformationHandler.IsTransformed(Player))
             {
                 self.isCharging = true;

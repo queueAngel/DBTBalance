@@ -1,18 +1,93 @@
 ﻿using DBTBalance.Model;
-using DBZGoatLib.Handlers;
-using Microsoft.Xna.Framework;
+using dbzcalamity;
+using dbzcalamity.Buffs.SSJForms;
+using DBZMODPORT.Buffs.SSJBuffs;
+using DBZMODPORT.Models;
+using DBZMODPORT.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace DBTBalance.Helpers
 {
+    public readonly struct DBTBuffInfo
+    {
+        public readonly float Damage;
+        public readonly float Speed;
+        public readonly int Defense;
+        public readonly float MinDamage;
+        public readonly float MaxDamage;
+        public readonly float DrainRate;
+        public readonly float MasterDrainRate;
+        public DBTBuffInfo(float damage, float speed, int defense, float minDamage, float maxDamage, float drainRate, float masterDrainRate)
+        {
+            Damage = damage;
+            Speed = speed;
+            Defense = defense;
+            MinDamage = minDamage;
+            MaxDamage = maxDamage;
+            DrainRate = drainRate;
+            MasterDrainRate = masterDrainRate;
+        }
+        public DBTBuffInfo(float damage, float speed, int defense, float drainRate, float masterDrainRate)
+        {
+            Damage = damage;
+            Speed = speed;
+            Defense = defense;
+            DrainRate = drainRate;
+            MasterDrainRate = masterDrainRate;
+        }
+    }
     internal sealed class BuffHooks
     {
+        private static Dictionary<Type, DBTBuffInfo> _adjustments;
+        public static Dictionary<Type, DBTBuffInfo> Adjustments
+        { 
+            get
+            {
+                if (_adjustments is null)
+                    InitializeAdjustments();
+                return _adjustments;
+            }
+        }
+        public static void RegisterAdjustment<T>(DBTBuffInfo info) where T : ModBuff => _adjustments.Add(typeof(T), info);
+        public static void RegisterAdjustment<T>(float damage, float speed, int defense, float drainRate, float masterDrainRate) where T : ModBuff => _adjustments.Add(typeof(T), new DBTBuffInfo(damage, speed, defense, drainRate, masterDrainRate));
+        public static void RegisterAdjustment<T>(float damage, float speed, int defense, float minDamage, float maxDamage, float drainRate, float masterDrainRate) where T : ModBuff => _adjustments.Add(typeof(T), new DBTBuffInfo(damage, speed, defense, minDamage, maxDamage, drainRate, masterDrainRate));
+        private static void InitializeAdjustments()
+        {
+            _adjustments = [];
+
+            RegisterAdjustment<SSJ1Buff>(1.20f, 1.10f, 4, 0f, 0f);
+            RegisterAdjustment<ASSJBuff>(1.25f, 1.10f, 5, 0f, 0f);
+            RegisterAdjustment<USSJBuff>(1.3f, 0.9f, 17, 0f, 0f);
+            RegisterAdjustment<SuperKaiokenBuff>(1.3f, 1.10f, 6, 0f, 0f);
+            RegisterAdjustment<SSJ2Buff>(1.3f, 1.10f, 11, 0f, 0f);
+            RegisterAdjustment<SSJ3Buff>(1.4f, 1.10f, 15, 0f, 0f);
+            RegisterAdjustment<SSJGBuff>(1.55f, 1.15f, 23, 0f, 0f);
+
+            RegisterAdjustment<SSJBBuff>(1.70f, 1.30f, 30, 0f, 0f);
+            RegisterAdjustment<SSJRBuff>(1.95f, 1.10f, 23, 0f, 0f); // 1.80 dmg if DBCA enabled
+
+            RegisterAdjustment<LSSJBuff>(1.35f, 0.9f, 21, 0f, 0f);
+            RegisterAdjustment<LSSJ2Buff>(1.45f, 0.9f, 30, 0f, 0f);
+            RegisterAdjustment<LSSJ3Buff>(1.60f, 0.9f, 46, 0f, 0f);
+
+            if (ModLoader.HasMod("dbzcalamity"))
+                InitializeAdjustmentsCalamity();
+        }
+        [JITWhenModsEnabled("dbzcalamity")]
+        private static void InitializeAdjustmentsCalamity()
+        {
+            RegisterAdjustment<PUIBuff>(1.7f, 1.10f, 35, 0f, 0f, 0f, 0f);
+            RegisterAdjustment<UEBuff>(2f, 1.15f, 10, 1.85f, 2.5f, 0f, 0f);
+        }
+
+        // Replaced with _adjustments - qAngel
+
+        /*
         public static Dictionary<string, (float Damage, float Speed, int defense, float drainRate, float masterDrainRate)> DBT_Adjustments = new()
         {
             { "SSJ1Buff", (1.20f, 1.10f, 4, 0f, 0f) },
@@ -36,16 +111,16 @@ namespace DBTBalance.Helpers
             { "PUIBuff", (1.7f, 1.10f, 35, 0f, 0f, 0f, 0f) },
             { "UEBuff", (2f, 1.15f, 10, 1.85f, 2.5f, 0f, 0f) }
         };
-
+        */
         public static string BuildTooltip_Hook(dynamic self)
         {
             var tHelper = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("TransformationHelper"));
 
-            dynamic kaioken = tHelper.GetProperty("Kaioken").GetValue(null);
-            dynamic superKaioken = tHelper.GetProperty("SuperKaioken").GetValue(null);
+            BuffInfo kaioken = TransformationHelper.Kaioken;
+            BuffInfo superKaioken = TransformationHelper.SuperKaioken;
 
             string currentDisplayString = string.Empty;
-            if (self.Type == (int)kaioken.getBuffId || self.Type == (int)superKaioken.getBuffId)
+            if (self.Type == kaioken.getBuffId || self.Type == superKaioken.getBuffId)
             {
                 switch (self.kaiokenLevel)
                 {
@@ -100,47 +175,35 @@ namespace DBTBalance.Helpers
             if (!BalanceConfigServer.Instance.SSJTweaks)
                 return;
 
-            string name = BuffLoader.GetBuff((int)self.Type).Name;
+            Type t = self.GetType();
 
-            if (DBT_Adjustments.TryGetValue(name, out var adjustments))
+            if (Adjustments.TryGetValue(t, out var adjustments))
             {
-                if (ModLoader.HasMod("dbzcalamity") && name == "SSJRBuff")
+                if (ModLoader.HasMod("dbzcalamity") && t == typeof(SSJRBuff))
                     self.damageMulti = 1.80f;
                 else
                     if (adjustments.Damage != 0)
                         self.damageMulti = adjustments.Damage;
                 if (adjustments.Speed != 0)
                     self.speedMulti = adjustments.Speed;
-                if (adjustments.defense != 0)
-                    self.baseDefenceBonus = adjustments.defense;
-                if (adjustments.drainRate != 0)
-                    self.kiDrainRate = adjustments.drainRate;
-                if (adjustments.masterDrainRate != 0)
-                    self.kiDrainRateWithMastery = adjustments.masterDrainRate;
+                if (adjustments.Defense != 0)
+                    self.baseDefenceBonus = adjustments.Defense;
+                if (adjustments.DrainRate != 0)
+                    self.kiDrainRate = adjustments.DrainRate;
+                if (adjustments.MasterDrainRate != 0)
+                    self.kiDrainRateWithMastery = adjustments.MasterDrainRate;
+                if (adjustments.MinDamage != 0)
+                    self.MinDamage = adjustments.MinDamage;
+                if (adjustments.MaxDamage != 0)
+                    self.MaxDamage = adjustments.MaxDamage;
 
-                string tip = (string)DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals(name)).GetMethod("AssembleTransBuffDescription").Invoke(self, null);
+                // Replaced with DBTBalanceGlobalBuff - qAngel
+
+                /*
+                string tip = self.AssembleTransBuffTranscription();
 
                 self.Description.SetDefault(tip);
-            }
-            if (ModLoader.HasMod("dbzcalamity"))
-            {
-                if (DBCA_Adjustments.TryGetValue(name, out var adjustments2))
-                {
-                    if (adjustments2.Damage != 0)
-                        self.damageMulti = adjustments2.Damage;
-                    if (adjustments2.Speed != 0)
-                        self.speedMulti = adjustments2.Speed;
-                    if (adjustments2.defense != 0)
-                        self.baseDefenceBonus = adjustments2.defense;
-                    if (adjustments2.drainRate != 0)
-                        self.kiDrainRate = adjustments2.drainRate;
-                    if (adjustments2.masterDrainRate != 0)
-                        self.kiDrainRateWithMastery = adjustments2.masterDrainRate;
-                    if (adjustments2.minDamage != 0)
-                        self.MinDamage = adjustments2.minDamage;
-                    if (adjustments2.maxDamage != 0)
-                        self.MaxDamage = adjustments2.maxDamage;
-                }
+                */
             }
         }
 
@@ -153,22 +216,23 @@ namespace DBTBalance.Helpers
             if (!BalanceConfigServer.Instance.SSJTweaks)
                 return;
 
-            string name = BuffLoader.GetBuff((int)self.Type).Name;
-
-            if(DBT_Adjustments.TryGetValue(name, out var adjustments))
+            if(Adjustments.TryGetValue(self.Type, out DBTBuffInfo adjustments))
             {
-                float dmg = (float)(1.0 + ((double)(adjustments.Damage) - 1.0) * 0.5);
+                float dmg = (float)(1.0 + ((adjustments.Damage) - 1.0) * 0.5);
 
                 player.GetDamage(DamageClass.Generic) *= dmg;
 
-                if(name == "SSJRBuff")
+                if (ModLoader.HasMod("dbzcalamity") && self.Type == ModContent.BuffType<SSJRBuff>())
                 {
-                    var type = DBTBalance.DBCA.Code.DefinedTypes.First(x => x.Name.Equals("dbzcalamityPlayer"));
-                    dynamic instance = type.GetMethod("ModPlayer").Invoke(null, new object[] { player });
-                    var dodgeChance = type.GetField("dodgeChange");
-                    dodgeChance.SetValue(instance, (float)dodgeChance.GetValue(instance) + 20f);
+                    UpdateCalamity(player);
                 }
             }
+        }
+        [JITWhenModsEnabled("dbzcalamity")]
+        private static void UpdateCalamity(Player player)
+        {
+            dbzcalamityPlayer modPlayer = player.GetModPlayer<dbzcalamityPlayer>();
+            modPlayer.dodgeChange += 20f;
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,7 +13,7 @@ namespace DBTBalance.Helpers
             ModPacket packet = DBTBalance.Instance.GetPacket();
 
             packet.Write(SYNC_UNLOCK_STATUS);
-            packet.Write(who);
+            packet.Write((byte)who);
             packet.Write(value);
 
             packet.Send(-1);
@@ -40,7 +35,7 @@ namespace DBTBalance.Helpers
             switch (command)
             {
                 case SYNC_UNLOCK_STATUS:
-                    int who = reader.ReadInt32();
+                    int who = reader.ReadByte();
                     bool state = reader.ReadBoolean();
                     ReceiveUnlockStatus(who, state);
                 break;

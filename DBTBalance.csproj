@@ -3,22 +3,19 @@
   <Import Project="..\tModLoader.targets" />
   <PropertyGroup>
     <AssemblyName>DBTBalance</AssemblyName>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="dbzcalamity">
-      <HintPath>..\ModAssemblies\dbzcalamity_v1.0.0.3.dll</HintPath>
-    </Reference>
+	  <Reference Include="dbzcalamity">
+		  <HintPath>..\ModAssemblies\dbzcalamity_v1.1.2.1.dll</HintPath>
+	  </Reference>
     <Reference Include="DBZGoatLib">
-      <HintPath>..\DBZGoatLib\bin\Debug\net6.0\DBZGoatLib.dll</HintPath>
+      <HintPath>..\ModAssemblies\DBZGoatLib_v1.8.0.dll</HintPath>
     </Reference>
     <Reference Include="DBZMODPORT">
-      <HintPath>..\ModAssemblies\DBZMODPORT_v0.3.3.dll</HintPath>
+      <HintPath>..\ModAssemblies\DBZMODPORT_v1.0.0.17.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
-using Terraria.Audio;
-using Microsoft.Xna.Framework;
 using DBTBalance.Helpers;
+using DBZMODPORT;
 
 namespace DBTBalance
 {
@@ -17,17 +11,41 @@ namespace DBTBalance
         public override bool InstancePerEntity => true;
         public override void OnKill(NPC npc)
         {
+            if (npc.type != NPCID.MoonLordCore)
+                return;
+
+            foreach (var player in Main.ActivePlayers)
+            {
+                BPlayer bPlayer = player.GetModPlayer<BPlayer>();
+                MyPlayer myPlayer = player.GetModPlayer<MyPlayer>();
+
+                if (!bPlayer.LSSJ4Achieved)
+                {
+                    if (Main.dedServ)
+                    {
+                        bPlayer.MP_Unlock = true;
+                        bPlayer.LSSJ4Achieved = true;
+                        BNetworkHandler.SendUnlockStatus(player.whoAmI, true);
+                    }
+                    else
+                    {
+                        if (myPlayer.masteryLevelLeg3 >= 1f)
+                            bPlayer.LSSJ4Achieved = true;
+                    }
+                }
+            }
+
+            // Replaced with better code above - qAngel
+
+            /*
             if (ModLoader.HasMod("DBZMODPORT"))
             {
                 if (Main.netMode == NetmodeID.SinglePlayer)
                 {
                     BPlayer Player = Main.CurrentPlayer.GetModPlayer<BPlayer>();
-                    var ModPlayerClass = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer"));
-                    var getModPlayer = ModPlayerClass.GetMethod("ModPlayer");
+                    MyPlayer modPlayer = Main.CurrentPlayer.GetModPlayer<MyPlayer>();
 
-                    var dbzPlayer = getModPlayer.Invoke(null, new object[] { Player.Player });
-                    var masteryfield = ModPlayerClass.GetField("masteryLevelLeg3");
-                    float mastery = (float)masteryfield.GetValue(dbzPlayer);
+                    float mastery = modPlayer.masteryLevelLeg3;
 
                     if (!Player.LSSJ4Achieved && mastery >= 1f)
                     {
@@ -62,6 +80,7 @@ namespace DBTBalance
                     }
                 }
             }
+            */
         }
     }
 }

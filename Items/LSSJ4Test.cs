@@ -1,9 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
@@ -16,8 +11,10 @@ namespace DBTBalance.Items
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
+            /*
             Tooltip.SetDefault("DEUBG ITEM\bUnlocks Legenadry Super Saiyan 4.");
             DisplayName.SetDefault("LSSJ4 Test");
+            */
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Item.type] = 1;
         }
         public override void SetDefaults()

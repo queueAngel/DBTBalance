@@ -1,0 +1,77 @@
+Items: {
+	AviationBoots.Tooltip:
+		'''
+		You're able to fly for a short while
+		Flying creates a damaging trail
+		'''
+	BurningBandana.Tooltip:
+		'''
+		4% Increased Ki damage
+		Burns enemies on hit
+		'''
+	FreezingBandana.Tooltip:
+		'''
+		4% Increased Ki damage
+		Freezes enemies on hit
+		'''
+	ZenkaiOrb.Tooltip:
+		'''
+		'This orb activates in near-death situations'
+		Zenkai effectivity increased by 10%
+		Taking fatal damage will instead return you to 50 HP
+		and grant x2 damage for a short time
+		2 Minute cooldown
+		'''
+	ZenkaiAmulet.Tooltip:
+		'''
+		'This amulet activates in near-death situations.'
+		Zenkai effectivity increased by 16%
+		Taking fatal damage will instead return you to 50 HP
+		and grant x2 damage for a short time
+		2 Minute cooldown
+		'''
+	DiamondStorm.Tooltip:
+		'''
+		+20 max HP
+		10% increased ki damage
+		14% increased ki knockback
+		+250 Max Ki
+		Getting hit restores a small amount of Ki and shoots down many arrows
+		The amount of arrows is increased with the damage taken
+		If they don't hit an enemy, they go back to you
+		The arrows give you a damage increasing buff
+		'''
+	ElysianCrystal.Tooltip:
+		'''
+		'Blessed by the Profaned Flame'
+		Increased flight speed
+		+300 ki/sec charge rate
+		Reduced flight ki usage by 25%
+		+1500 Max ki
+		'''
+	PhantomShield.Tooltip:
+		'''
+		5% Increased Ki Damage
+		4% Increased Ki Crit rate
+		Gives a chance to dodge attacks on hit
+		After dodging, you gain increased damage for a short time
+		'''
+	ZenkaiRing.Tooltip:
+		'''
+		'This ring activates in near-death situations'
+		Zenkai effectivity increased by 24%
+		Taking fatal damage will instead return you to 50 HP
+		and grant x2 damage for a short time
+		2 Minute cooldown
+		'''
+	ZenkaiCrown.Tooltip:
+		'''
+		'This crown activates in near-death situations'
+		+2500 Max ki
+		Zenkai effectivity increased by 32%
+		Taking fatal damage will instead return you to 50 HP
+		and grant x2 damage for a short time
+		2 Minute cooldown
+		Drastically Increased speed while charging
+		'''
+}

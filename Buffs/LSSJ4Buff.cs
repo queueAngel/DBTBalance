@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DBTBalance.Helpers;
-using DBTBalance.Model;
+﻿using DBTBalance.Model;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using DBZGoatLib.Model;
-using DBZGoatLib.Handlers;
 using DBZGoatLib;
 using Microsoft.Xna.Framework.Graphics;
 

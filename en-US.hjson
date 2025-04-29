@@ -1,0 +1,59 @@
+Mods: {
+	DBTBalance: {
+		Buffs: {
+			LSSJ4Buff: {
+				DisplayName: L S S J4 Buff
+				Description: Mods.DBTBalance.Buffs.LSSJ4Buff.Description
+			}
+		}
+
+		Items: {
+			LSSJ4Test: {
+				DisplayName: L S S J4 Test
+				Tooltip: ""
+			}
+		}
+
+		Configs: {
+			BalanceConfig: {
+				DisplayName: Balance Config
+				Headers.LSSJ4Settings: L S S J4 Settings Header
+
+				UseHair: {
+					Label: Use Hair
+					Tooltip: ""
+				}
+			}
+
+			BalanceConfigServer: {
+				DisplayName: Balance Config Server
+				Headers.ToggleableBalanceAdjustments: Toggleable Balance Adjustments Header
+
+				ArmorCrunch: {
+					Label: Armor Crunch
+					Tooltip: ""
+				}
+
+				ChargeRework: {
+					Label: Charge Rework
+					Tooltip: ""
+				}
+
+				KiRework: {
+					Label: Ki Rework
+					Tooltip: ""
+				}
+
+				LongerTransform: {
+					Label: Longer Transform
+					Tooltip: ""
+				}
+
+				SSJTweaks: {
+					Label: S S J Tweaks
+					Tooltip: ""
+				}
+			}
+		}
+	}
+}

@@ -1,29 +1,22 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using Terraria;
 using Terraria.ModLoader;
 using DBZGoatLib.Handlers;
 using DBTBalance.Model;
+using DBZMODPORT.Projectiles;
+using DBZMODPORT;
+using static DBTBalance.Helpers.Hooks;
+using dbzcalamity;
 
 namespace DBTBalance.Helpers
 {
-    internal sealed class Hooks
+    internal static class Hooks
     {
-        public static void BaseBeam_ModifyHitNPC_Hook(
-            dynamic self,
-            NPC target,
-            ref int damage,
-            ref float knockback,
-            ref bool crit,
-            ref int hitDirection)
+        public static void BaseBeam_ModifyHitNPC_Hook(dynamic self, NPC target, ref NPC.HitModifiers modifiers)
         {
-
-            dynamic playerOwner = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("BaseBeam")).GetMethod("GetPlayerOwner").Invoke(self, null);
-            damage = (int)(damage * ((float)playerOwner.kiDamage * 0.5f));
+            MyPlayer playerOwner = self.GetPlayerOwner();
+            // eh, here it originally used kiDamage which is a float. not sure what the equivalent would be with the new damageclass system
+            modifiers.SourceDamage += playerOwner.Player.GetDamage<KiDamageType>().Flat * 0.5f;
         }
 
         public delegate void orig_ResetEffects(dynamic self);
@@ -37,22 +30,7 @@ namespace DBTBalance.Helpers
 
         public delegate float orig_GetDodgeCost(dynamic self);
 
-        public static float DBCA_GetDodgeCost_Hook(orig_GetDodgeCost orig, dynamic self)
-        {
-            float value = orig(self);
-
-            if (TransformationHandler.IsTransformed((Player)self.Player))
-                if (TransformationHandler.GetCurrentTransformation((Player)self.Player)?.buffKeyName == "SSJRBuff")
-                {
-                    var type = DBTBalance.DBCA.Code.DefinedTypes.First(x => x.Name.Equals("dbzcalamityPlayer"));
-                    var isAngelic = type.GetField("IsAngelic");
-                    return 300 * ((bool)isAngelic.GetValue(self) ? 0.66f : 1f);
-                }
-
-            return value;
-        }
-
-        public delegate void orig_HandleChargingKi(dynamic self, Player player);
+        public delegate void orig_HandleChargingKi(AbstractChargeBall self, Player player);
 
         public static void AbstractChargeBall_HandleChargingKi_Hook(orig_HandleChargingKi orig, dynamic self, Player player)
         {
@@ -62,7 +40,7 @@ namespace DBTBalance.Helpers
                 int limitAdd = 0;
                 if (player != null)
                 {
-                    dynamic modPlayer = DBTBalance.DBZMOD.Code.DefinedTypes.First(x => x.Name.Equals("MyPlayer")).GetMethod("ModPlayer").Invoke(null, new object[] { player });
+                    MyPlayer modPlayer = player.GetModPlayer<MyPlayer>();
                     limitAdd = modPlayer.chargeLimitAdd;
                 }
                 self.chargeRatePerSecond = (float)(limit + limitAdd) / 3f;
@@ -71,7 +49,7 @@ namespace DBTBalance.Helpers
             orig(self,player);
         }
 
-        public static float BaseBeamCharge_GetBeamPowerMultiplier_Hook(dynamic self)
+        public static float BaseBeamCharge_GetBeamPowerMultiplier_Hook(BaseBeamCharge self)
         {
             if (BalanceConfigServer.Instance.ChargeRework)
                 return 1f + (float)self.ChargeLevel * 0.03f;
@@ -79,7 +57,7 @@ namespace DBTBalance.Helpers
                 return 1f + (float)self.ChargeLevel / 20f;
         }
 
-        public static int BaseBeamCharge_GetBeamDamage_Hook(dynamic self)
+        public static int BaseBeamCharge_GetBeamDamage_Hook(BaseBeamCharge self)
         {
             if (BalanceConfigServer.Instance.ChargeRework)
                 return (int)Math.Ceiling((self.Projectile.damage * BaseBeamCharge_GetBeamPowerMultiplier_Hook(self))*0.7f);
@@ -87,17 +65,29 @@ namespace DBTBalance.Helpers
                 return (int)Math.Ceiling(self.Projectile.damage * BaseBeamCharge_GetBeamPowerMultiplier_Hook(self));
         }
 
-        public static float MyPlayer_PowerWishMulti_Hook(dynamic self)
+        public static float MyPlayer_PowerWishMulti_Hook(MyPlayer self)
         {
-            return (float)(1f + (0.05 * (int)self.GetPowerWishesUsed()));
+            return (float)(1f + (0.05 * self.GetPowerWishesUsed()));
         }
-        public static void MyPlayer_HandlePowerWishMultipliers_Hook(dynamic self)
+        public static void MyPlayer_HandlePowerWishMultipliers_Hook(MyPlayer self)
         {
             float multi = MyPlayer_PowerWishMulti_Hook(self);
-            Player player = (Player)self.Player;
+            self.Player.GetDamage(DamageClass.Generic) += multi;
+            self.Player.GetDamage<KiDamageType>() += multi;
+        }
+    }
+    [JITWhenModsEnabled("dbzcalamity")]
+    internal static class DBCAHooks
+    {
+        public static float DBCA_GetDodgeCost_Hook(orig_GetDodgeCost orig, dbzcalamityPlayer self)
+        {
+            float value = orig(self);
 
-            player.GetDamage(DamageClass.Generic) *= multi;
-            self.KiDamage *= multi;
+            if (TransformationHandler.IsTransformed(self.Player))
+                if (TransformationHandler.GetCurrentTransformation(self.Player)?.buffKeyName == "SSJRBuff")
+                    return 300 * (self.IsAngelic ? 0.66f : 1f);
+
+            return value;
         }
     }
 }
