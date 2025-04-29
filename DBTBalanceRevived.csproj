@@ -15,7 +15,7 @@
       <HintPath>..\ModAssemblies\DBZGoatLib_v1.8.0.dll</HintPath>
     </Reference>
     <Reference Include="DBZMODPORT">
-      <HintPath>..\ModAssemblies\DBZMODPORT_v1.0.0.17.dll</HintPath>
+      <HintPath>..\ModAssemblies\DBZMODPORT_v1.0.0.13.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

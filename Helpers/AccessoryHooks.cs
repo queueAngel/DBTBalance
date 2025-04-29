@@ -25,7 +25,7 @@ namespace DBTBalanceRevived.Helpers
         { 
             get
             {
-                Type[] types =
+                return
                 [
                     typeof(ArmCannon),
                     typeof(WornGloves),
@@ -52,14 +52,10 @@ namespace DBTBalanceRevived.Helpers
                     typeof(SapphireNecklace),
                     typeof(TopazNecklace),
                 ];
-
-                if (ModLoader.HasMod("dbzcalamity"))
-                    return [.. types, .. UpgradeTypesCalamity];
-                return types;
             } 
         }
         [JITWhenModsEnabled("dbzcalamity")]
-        private static Type[] UpgradeTypesCalamity
+        internal static Type[] UpgradeTypesCalamity
         {
             get
             {
@@ -83,23 +79,23 @@ namespace DBTBalanceRevived.Helpers
         #region Params T[] When?
         public static void RegisterUpgradePath<TSource, TUpgradeA>()
             where TSource : ModItem
-            where TUpgradeA : ModItem => UpgradePaths.Add((ushort)ItemType<TSource>(), [(ushort)ItemType<TUpgradeA>()]);
+            where TUpgradeA : ModItem => UpgradePaths[(ushort)ItemType<TSource>()] = [(ushort)ItemType<TUpgradeA>()];
         public static void RegisterUpgradePath<TSource, TUpgradeA, TUpgradeB>()
             where TSource : ModItem
             where TUpgradeA : ModItem
-            where TUpgradeB : ModItem => UpgradePaths.Add((ushort)ItemType<TSource>(), [(ushort)ItemType<TUpgradeA>(), (ushort)ItemType<TUpgradeB>()]);
+            where TUpgradeB : ModItem => UpgradePaths[(ushort)ItemType<TSource>()] = [(ushort)ItemType<TUpgradeA>(), (ushort)ItemType<TUpgradeB>()];
         public static void RegisterUpgradePath<TSource, TUpgradeA, TUpgradeB, TUpgradeC>()
             where TSource : ModItem
             where TUpgradeA : ModItem
             where TUpgradeB : ModItem
-            where TUpgradeC : ModItem => UpgradePaths.Add((ushort)ItemType<TSource>(), [(ushort)ItemType<TUpgradeA>(), (ushort)ItemType<TUpgradeB>(), (ushort)ItemType<TUpgradeC>()]);
+            where TUpgradeC : ModItem => UpgradePaths[(ushort)ItemType<TSource>()] = [(ushort)ItemType<TUpgradeA>(), (ushort)ItemType<TUpgradeB>(), (ushort)ItemType<TUpgradeC>()];
         public static void RegisterUpgradePath<TSource, TUpgradeA, TUpgradeB, TUpgradeC, TUpgradeD, TUpgradeE>()
     where TSource : ModItem
     where TUpgradeA : ModItem
     where TUpgradeB : ModItem
     where TUpgradeC : ModItem
     where TUpgradeD : ModItem
-    where TUpgradeE : ModItem => UpgradePaths.Add((ushort)ItemType<TSource>(), [(ushort)ItemType<TUpgradeA>(), (ushort)ItemType<TUpgradeB>(), (ushort)ItemType<TUpgradeC>(), (ushort)ItemType<TUpgradeD>(), (ushort)ItemType<TUpgradeE>()]);
+    where TUpgradeE : ModItem => UpgradePaths[(ushort)ItemType<TSource>()] = [(ushort)ItemType<TUpgradeA>(), (ushort)ItemType<TUpgradeB>(), (ushort)ItemType<TUpgradeC>(), (ushort)ItemType<TUpgradeD>(), (ushort)ItemType<TUpgradeE>()];
         public static void RegisterUpgradePath<TSource, TUpgradeA, TUpgradeB, TUpgradeC, TUpgradeD, TUpgradeE, TUpgradeF>()
             where TSource : ModItem
             where TUpgradeA : ModItem
@@ -107,7 +103,7 @@ namespace DBTBalanceRevived.Helpers
             where TUpgradeC : ModItem
             where TUpgradeD : ModItem
             where TUpgradeE : ModItem
-            where TUpgradeF : ModItem => UpgradePaths.Add((ushort)ItemType<TSource>(), [(ushort)ItemType<TUpgradeA>(), (ushort)ItemType<TUpgradeB>(), (ushort)ItemType<TUpgradeC>(), (ushort)ItemType<TUpgradeD>(), (ushort)ItemType<TUpgradeE>(), (ushort)ItemType<TUpgradeF>()]);
+            where TUpgradeF : ModItem => UpgradePaths[(ushort)ItemType<TSource>()] = [(ushort)ItemType<TUpgradeA>(), (ushort)ItemType<TUpgradeB>(), (ushort)ItemType<TUpgradeC>(), (ushort)ItemType<TUpgradeD>(), (ushort)ItemType<TUpgradeE>(), (ushort)ItemType<TUpgradeF>()];
         #endregion
         public static void RegisterDamageAdjustment<TTarget>(float adjustment) where TTarget : ModItem => DamageAdjustment.Add((ushort)ItemType<TTarget>(), adjustment);
         internal static void InitializeDamageAdjustment()
@@ -260,7 +256,8 @@ namespace DBTBalanceRevived.Helpers
 
             if(DamageAdjustment.TryGetValue((ushort)self.Type, out float amount))
             {
-                player.GetDamage<KiDamageType>() -= amount;
+                player.GetModPlayer<MyPlayer>().kiDamage -= amount;
+                //player.GetDamage<KiDamageType>() -= amount;
             }
         }
     }

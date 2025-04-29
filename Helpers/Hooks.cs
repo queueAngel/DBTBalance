@@ -16,7 +16,8 @@ namespace DBTBalanceRevived.Helpers
         {
             MyPlayer playerOwner = self.GetPlayerOwner();
             // eh, here it originally used kiDamage which is a float. not sure what the equivalent would be with the new damageclass system
-            modifiers.SourceDamage += playerOwner.Player.GetDamage<KiDamageType>().Flat * 0.5f;
+            // lol now i went back to an older version
+            modifiers.SourceDamage += playerOwner.kiDamage * 0.5f; // playerOwner.Player.GetDamage<KiDamageType>().Flat * 0.5f;
         }
 
         public delegate void orig_ResetEffects(dynamic self);
@@ -73,7 +74,8 @@ namespace DBTBalanceRevived.Helpers
         {
             float multi = MyPlayer_PowerWishMulti_Hook(self);
             self.Player.GetDamage(DamageClass.Generic) += multi;
-            self.Player.GetDamage<KiDamageType>() += multi;
+            //self.Player.GetDamage<KiDamageType>() += multi;
+            self.kiDamage *= multi;
         }
     }
     [JITWhenModsEnabled("dbzcalamity")]

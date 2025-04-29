@@ -31,7 +31,7 @@ Mods: {
 
 				UseHair: {
 					Label: Replace Hair/Arm with hair:
-					Tooltip: "(Janky) Replace the player's chest piece with red-ish hair."
+					Tooltip: (Janky) Replace the player's chest piece with red-ish hair.
 				}
 			}
 
@@ -41,7 +41,7 @@ Mods: {
 
 				ArmorCrunch: {
 					Label: Armor Defense Cut
-					Tooltip: "Halves the defense bonus of Ki-Class armor to accomodate for Saiyan form defense bonuses."
+					Tooltip: Halves the defense bonus of Ki-Class armor to accomodate for Saiyan form defense bonuses.
 				}
 
 				ChargeRework: {
@@ -55,23 +55,21 @@ Mods: {
 
 				KiRework: {
 					Label: Ki Rework
-					Tooltip: "Removes all passive Ki Regen and turns it into Ki Charge Rate."
+					Tooltip: Removes all passive Ki Regen and turns it into Ki Charge Rate.
 				}
 
 				LongerTransform: {
 					Label: Longer Transformation Times
-					Tooltip: "Makes transforming into SSJ forms require holding the button for a small duration."
+					Tooltip: Makes transforming into SSJ forms require holding the button for a small duration.
 				}
 
 				SSJTweaks: {
 					Label: Super Saiyan Transformation Tweaks
-					Tooltip: "Rebalances the bonuses granted by transformations to reduce power creep. Reload required."
+					Tooltip: Rebalances the bonuses granted by transformations to reduce power creep. Reload required.
 				}
 			}
 		}
 
-		Misc: {
-			LSSJ4Unlocked: You have unlocked your true potential. Legendary Super Saiyan 4 has been achieved!
-		}
+		Misc.LSSJ4Unlocked: You have unlocked your true potential. Legendary Super Saiyan 4 has been achieved!
 	}
 }

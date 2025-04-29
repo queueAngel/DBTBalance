@@ -73,6 +73,7 @@ namespace DBTBalanceRevived
             }
 
         }
+
         [JITWhenModsEnabled("dbzcalamity")]
         private static void LoadHooksCalamity()
         {
