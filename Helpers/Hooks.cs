@@ -12,9 +12,15 @@ namespace DBTBalanceRevived.Helpers
 {
     internal static class Hooks
     {
-        public static void BaseBeam_ModifyHitNPC_Hook(dynamic self, NPC target, ref NPC.HitModifiers modifiers)
+        public delegate void orig_ModifyHitNPC(ModProjectile self, NPC target, ref NPC.HitModifiers modifiers);
+        public static void BaseBeam_ModifyHitNPC_Hook(orig_ModifyHitNPC orig, ModProjectile self, NPC target, ref NPC.HitModifiers modifiers)
         {
-            MyPlayer playerOwner = self.GetPlayerOwner();
+            if (self is not BaseBeam beam)
+            {
+                orig(self, target, ref modifiers);
+                return;
+            }
+            MyPlayer playerOwner = beam.GetPlayerOwner();
             // eh, here it originally used kiDamage which is a float. not sure what the equivalent would be with the new damageclass system
             // lol now i went back to an older version
             modifiers.SourceDamage += playerOwner.kiDamage * 0.5f; // playerOwner.Player.GetDamage<KiDamageType>().Flat * 0.5f;
