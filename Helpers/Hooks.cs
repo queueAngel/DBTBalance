@@ -74,7 +74,7 @@ namespace DBTBalanceRevived.Helpers
 
         public static float MyPlayer_PowerWishMulti_Hook(MyPlayer self)
         {
-            return (float)(1f + (0.05 * self.GetPowerWishesUsed()));
+            return (float)(0.05 * self.GetPowerWishesUsed());
         }
         public static void MyPlayer_HandlePowerWishMultipliers_Hook(MyPlayer self)
         {
