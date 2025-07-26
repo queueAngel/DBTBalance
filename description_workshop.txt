@@ -4,11 +4,11 @@
 
 A port of Dragon Ball Terraria: Rebalanced to the latest tModLoader version.
 
-h2]Note[/h2]
+[h2]Note[/h2]
 
-This mod is not compatible with the latest version of Dragon Ball Terraria Legacy. You need version 1.0.0.13 or older.
+This mod is compatible with most versions of Dragon Ball Terraria Legacy, however there are a couple versions after 1.0.0.13 that won't work. If you're using an old version or the most recent one, you'll be fine though.
 
-h2]Features[/h2]
+[h2]Features[/h2]
 
 To see the full list of features, click [url=https://github.com/yoshisman8/DBTBalance/wiki]here.[/url] (Link to the original DBTBalance wiki)
 
