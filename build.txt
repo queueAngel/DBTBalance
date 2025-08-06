@@ -1,6 +1,6 @@
 displayName = Dragon Ball Terraria: Rebalanced: Revived
 author = Vyklade (Revived by qAngel)
-version = 1.0.0.2
+version = 1.0.0.3
 weakReferences = dbzcalamity
 modReferences = DBZMODPORT, DBZGoatLib
 sortAfter = DBZMODPORT, dbzcalamity

@@ -81,7 +81,7 @@ namespace DBTBalanceRevived.Helpers
             float multi = MyPlayer_PowerWishMulti_Hook(self);
             self.Player.GetDamage(DamageClass.Generic) += multi;
             //self.Player.GetDamage<KiDamageType>() += multi;
-            self.kiDamage *= multi;
+            self.kiDamage += multi;
         }
     }
     [JITWhenModsEnabled("dbzcalamity")]
