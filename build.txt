@@ -1,8 +1,9 @@
 displayName = Dragon Ball Terraria: Rebalanced: Revived
 author = Vyklade (Revived by qAngel)
-version = 1.0.0.3
+version = 1.0.1.0
 weakReferences = CalamityMod, dbzcalamity
 modReferences = DBZMODPORT, DBZGoatLib
+buildIgnore = *.csproj, *.user, obj\*, bin\*, lib\*, .vs\*
 sortAfter = CalamityMod, DBZMODPORT, dbzcalamity
 includeSource = true
 homepage = https://github.com/yoshisman8/DBTBalance/wiki
