@@ -34,14 +34,19 @@ namespace DBTBalanceRevived
             Type myPlayer = typeof(MyPlayer);
             Type baseBeamCharge = typeof(BaseBeamCharge);
 
-            MonoModHooks.Add(typeof(BaseBeam).GetMethod("ModifyHitNPC"), Hooks.BaseBeam_ModifyHitNPC_Hook);
-            MonoModHooks.Add(myPlayer.GetMethod("ResetEffects"), Hooks.MyPlayer_ResetEffects_Hook);
-            MonoModHooks.Add(myPlayer.GetMethod("PowerWishMulti"), Hooks.MyPlayer_PowerWishMulti_Hook);
-            MonoModHooks.Add(myPlayer.GetMethod("HandlePowerWishMultipliers"), Hooks.MyPlayer_HandlePowerWishMultipliers_Hook);
+            MonoModHooks.Add(typeof(BaseBeam).GetMethod(nameof(BaseBeam.ModifyHitNPC)), Hooks.BaseBeam_ModifyHitNPC_Hook);
+            MonoModHooks.Add(myPlayer.GetMethod(nameof(MyPlayer.ResetEffects)), Hooks.MyPlayer_ResetEffects_Hook);
+            MonoModHooks.Add(myPlayer.GetMethod(nameof(MyPlayer.PowerWishMulti)), Hooks.MyPlayer_PowerWishMulti_Hook);
+            MonoModHooks.Add(myPlayer.GetMethod(nameof(MyPlayer.HandlePowerWishMultipliers)), Hooks.MyPlayer_HandlePowerWishMultipliers_Hook);
             MonoModHooks.Add(baseBeamCharge.GetMethod("GetBeamPowerMultiplier", BindingFlags.Instance | BindingFlags.NonPublic), Hooks.BaseBeamCharge_GetBeamPowerMultiplier_Hook);
             MonoModHooks.Add(baseBeamCharge.GetMethod("GetBeamDamage", BindingFlags.Instance | BindingFlags.NonPublic), Hooks.BaseBeamCharge_GetBeamDamage_Hook);
-            MonoModHooks.Add(typeof(AbstractChargeBall).GetMethod("HandleChargingKi"), Hooks.AbstractChargeBall_HandleChargingKi_Hook);
-            MonoModHooks.Modify(typeof(KiProjectile).GetMethod("OnHitNPC"), Hooks.KiProjectile_OnHitNPC_Hook);
+            MonoModHooks.Add(typeof(AbstractChargeBall).GetMethod(nameof(AbstractChargeBall.HandleChargingKi)), Hooks.AbstractChargeBall_HandleChargingKi_Hook);
+            MonoModHooks.Modify(typeof(KiProjectile).GetMethod(nameof(KiProjectile.OnHitNPC)), Hooks.KiProjectile_OnHitNPC_Hook);
+
+            foreach (var type in Hooks.ProjectilesWithIncorrectInfuserHandling)
+            {
+                MonoModHooks.Modify(type.GetMethod(nameof(KiProjectile.OnHitNPC)), Hooks.FixInfuserEffectForProjectile);
+            }
 
             foreach (var type in AccessoryHooks.UpgradeTypes)
             {

@@ -9,6 +9,8 @@ using static DBTBalanceRevived.Helpers.Hooks;
 using dbzcalamity;
 using MonoMod.Cil;
 using Terraria.ID;
+using DBZMODPORT.Projectiles.LSSJs;
+using DBZMODPORT.Projectiles.SpiritBombs;
 
 namespace DBTBalanceRevived.Helpers
 {
@@ -87,9 +89,36 @@ namespace DBTBalanceRevived.Helpers
         }
         public static void KiProjectile_OnHitNPC_Hook(ILContext il)
         {
+            // searches for the first time the OnFire buff is applied (which happens to be the ruby infuser hit effect)
+            // and replaces it with Bleeding
             ILCursor c = new(il);
             c.GotoNext(i => i.MatchLdcI4(BuffID.OnFire));
             c.Next.Operand = BuffID.Bleeding;
+        }
+        public static void FixInfuserEffectForProjectile(ILContext il)
+        {
+            // calls 'base.OnHitNPC' at the beginning of the method
+            ILCursor c = new(il);
+            for (int i = 0; i <= 3; i++)
+                c.EmitLdarg(i);
+            c.EmitCall(typeof(KiProjectile).GetMethod(nameof(KiProjectile.OnHitNPC)));
+        }
+
+        public static Type[] ProjectilesWithIncorrectInfuserHandling
+        {
+            get
+            {
+                return
+                [
+                    typeof(KiBeamProjectile),
+                    typeof(HolyWrathBall),
+                    typeof(LSSJAuraLaser),
+                    typeof(LSSJAuraLaserBlack),
+                    typeof(SpiritBombBall),
+                    typeof(SupernovaBall),
+                    typeof(SuperSpiritBombBall),
+                ] ;
+            }
         }
     }
     [JITWhenModsEnabled("dbzcalamity")]
