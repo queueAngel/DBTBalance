@@ -9,13 +9,16 @@
   </PropertyGroup>
   <ItemGroup>
 	  <Reference Include="dbzcalamity">
-		  <HintPath>..\ModAssemblies\dbzcalamity_v1.1.2.1.dll</HintPath>
+		  <HintPath>lib\dbzcalamity_v1.1.2.1.dll</HintPath>
 	  </Reference>
     <Reference Include="DBZGoatLib">
-      <HintPath>..\ModAssemblies\DBZGoatLib_v1.8.0.dll</HintPath>
+      <HintPath>lib\DBZGoatLib_v1.8.0.dll</HintPath>
     </Reference>
     <Reference Include="DBZMODPORT">
-      <HintPath>..\ModAssemblies\DBZMODPORT_v1.0.0.13.dll</HintPath>
+      <HintPath>lib\DBZMODPORT_v1.0.0.13.dll</HintPath>
+    </Reference>
+    <Reference Include="CalamityMod">
+      <HintPath>lib\CalamityMod.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

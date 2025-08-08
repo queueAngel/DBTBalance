@@ -41,6 +41,7 @@ namespace DBTBalanceRevived
             MonoModHooks.Add(baseBeamCharge.GetMethod("GetBeamPowerMultiplier", BindingFlags.Instance | BindingFlags.NonPublic), Hooks.BaseBeamCharge_GetBeamPowerMultiplier_Hook);
             MonoModHooks.Add(baseBeamCharge.GetMethod("GetBeamDamage", BindingFlags.Instance | BindingFlags.NonPublic), Hooks.BaseBeamCharge_GetBeamDamage_Hook);
             MonoModHooks.Add(typeof(AbstractChargeBall).GetMethod("HandleChargingKi"), Hooks.AbstractChargeBall_HandleChargingKi_Hook);
+            MonoModHooks.Modify(typeof(KiProjectile).GetMethod("OnHitNPC"), Hooks.KiProjectile_OnHitNPC_Hook);
 
             foreach (var type in AccessoryHooks.UpgradeTypes)
             {

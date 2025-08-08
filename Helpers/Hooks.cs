@@ -7,6 +7,8 @@ using DBZMODPORT.Projectiles;
 using DBZMODPORT;
 using static DBTBalanceRevived.Helpers.Hooks;
 using dbzcalamity;
+using MonoMod.Cil;
+using Terraria.ID;
 
 namespace DBTBalanceRevived.Helpers
 {
@@ -82,6 +84,12 @@ namespace DBTBalanceRevived.Helpers
             self.Player.GetDamage(DamageClass.Generic) += multi;
             //self.Player.GetDamage<KiDamageType>() += multi;
             self.kiDamage += multi;
+        }
+        public static void KiProjectile_OnHitNPC_Hook(ILContext il)
+        {
+            ILCursor c = new(il);
+            c.GotoNext(i => i.MatchLdcI4(BuffID.OnFire));
+            c.Next.Operand = BuffID.Bleeding;
         }
     }
     [JITWhenModsEnabled("dbzcalamity")]
